@@ -1,6 +1,5 @@
 package com.fbp.engine.node;
 
-import com.fbp.engine.core.OutputPort;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

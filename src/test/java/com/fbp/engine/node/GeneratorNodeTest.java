@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// TODO Step3 테스트 코드 작성... ing
 class GeneratorNodeTest {
 
     private GeneratorNode generatorNode;
