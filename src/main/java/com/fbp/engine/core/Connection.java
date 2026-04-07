@@ -2,6 +2,7 @@ package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
 import lombok.Setter;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 

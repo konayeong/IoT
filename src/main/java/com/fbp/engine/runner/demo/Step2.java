@@ -1,4 +1,4 @@
-package com.fbp.engine.demo;
+package com.fbp.engine.runner.demo;
 
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.PrintNode;

@@ -2,17 +2,16 @@ package com.fbp.engine.node;
 
 import com.fbp.engine.message.Message;
 
-public class PrintNode extends AbstractNode {
+public class LogNode extends AbstractNode{
 
-    public PrintNode(String id) {
+    public LogNode(String id) {
         super(id);
         addInputPort("in");
+        addOutputPort("out");
     }
 
     @Override
     protected void onProcess(Message message) {
-        System.out.println(
-                "[" + getId() + "] " + message
-        );
+
     }
 }
