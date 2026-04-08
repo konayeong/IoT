@@ -3,7 +3,6 @@ package com.fbp.engine.node;
 import com.fbp.engine.message.Message;
 import java.util.Map;
 
-// TODO 이제 필요없나 ?
 public class GeneratorNode extends AbstractNode {
 
     public GeneratorNode(String id) {

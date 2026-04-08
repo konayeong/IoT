@@ -10,7 +10,7 @@ public class LogNode extends AbstractNode{
 
     private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
-    protected LogNode(String id) {
+    public LogNode(String id) {
         super(id);
         addInputPort("in");
         addOutputPort("out");
