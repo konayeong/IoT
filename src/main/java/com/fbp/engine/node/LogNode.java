@@ -2,9 +2,15 @@ package com.fbp.engine.node;
 
 import com.fbp.engine.message.Message;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+
 public class LogNode extends AbstractNode{
 
-    public LogNode(String id) {
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+
+    protected LogNode(String id) {
         super(id);
         addInputPort("in");
         addOutputPort("out");
@@ -12,6 +18,9 @@ public class LogNode extends AbstractNode{
 
     @Override
     protected void onProcess(Message message) {
+        String timestamp = LocalTime.now().format(FORMATTER);
+        System.out.println("[" + timestamp + "][" + getId() + "] " + message.getPayload());
 
+        send("out", message);
     }
 }

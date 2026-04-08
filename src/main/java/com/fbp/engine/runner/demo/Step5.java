@@ -1,6 +1,7 @@
 package com.fbp.engine.runner.demo;
 
 import com.fbp.engine.core.Connection;
+import com.fbp.engine.message.Message;
 import com.fbp.engine.node.FilterNode;
 import com.fbp.engine.node.PrintNode;
 import com.fbp.engine.node.TimerNode;
@@ -11,7 +12,6 @@ public class Step5 {
         FilterNode filterNode = new FilterNode("filter-1", "tick", 3);
         PrintNode printNode = new PrintNode("print-1");
 
-        // connect
         Connection conn1 = new Connection("conn-1");
         Connection conn2 = new Connection("conn-2");
 
@@ -25,6 +25,29 @@ public class Step5 {
         filterNode.initialize();
         printNode.initialize();
 
+        Thread filterThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                Message msg = conn1.poll(); // TimerNode로부터 메시지 수신
+                if(msg == null) {
+                    break;
+                }
+                filterNode.process(msg);    // tick >= 3이면 conn2로 전달
+            }
+        }, "FilterThread");
+
+        Thread printThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                Message msg = conn2.poll(); // FilterNode로부터 메시지 수신
+                if(msg == null) {
+                    break;
+                }
+                printNode.process(msg);     // 출력
+            }
+        }, "PrintThread");
+
+        filterThread.start();
+        printThread.start();
+
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
@@ -34,5 +57,16 @@ public class Step5 {
         timerNode.shutdown();
         filterNode.shutdown();
         printNode.shutdown();
+
+        filterThread.interrupt();
+        printThread.interrupt();
+
+        try {
+            filterThread.join();
+            printThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

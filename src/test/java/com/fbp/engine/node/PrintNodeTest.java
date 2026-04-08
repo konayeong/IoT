@@ -38,14 +38,20 @@ class PrintNodeTest {
     }
 
     @Test
-    @DisplayName("InputPort 조회")
+    @DisplayName("포트 구성 확인")
     void inputPort() {
-//        assertNotNull(printNode.getInputPort());
+        assertNotNull(printNode.getInputPort("in"));
     }
 
     @Test
-    @DisplayName("InputPort를 통한 수신")
-    void inputPort_receive() {
-        // InputPort의 receive()를 호출하면 process()가 실행됨
+    @DisplayName("process 정상 동작")
+    void process() {
+        assertDoesNotThrow( () -> printNode.process(new Message(Map.of())));
+    }
+
+    @Test
+    @DisplayName("AbstractNode 상속 확인")
+    void extends_abstractNode() {
+        assertInstanceOf(AbstractNode.class, printNode);
     }
 }

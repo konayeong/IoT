@@ -2,7 +2,6 @@ package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
 import lombok.Setter;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -26,7 +25,6 @@ public class Connection {
             buffer.put(message);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
         }
     }
 
@@ -35,7 +33,7 @@ public class Connection {
             return buffer.take();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
