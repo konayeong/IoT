@@ -71,5 +71,5 @@ public abstract class AbstractNode implements Node {
         outputPort.send(message);
     }
 
-    protected abstract void onProcess(Message message);
+    protected abstract void  onProcess(Message message);
 }
