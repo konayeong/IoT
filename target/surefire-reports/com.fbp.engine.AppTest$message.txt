@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
-Test set: com.fbp.engine.node.AlertNodeTest
+Test set: com.fbp.engine.AppTest$message
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.fbp.engine.node.AlertNodeTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 42.08 s -- in com.fbp.engine.AppTest$message

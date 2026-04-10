@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.fbp.engine.core.FlowEngineTest" time="0.015" tests="9" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.fbp.engine.node.MergeNodeTest" time="0.003" tests="4" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -59,22 +59,8 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="startFlow_notFoundId" classname="com.fbp.engine.core.FlowEngineTest" time="0.001">
-    <system-out><![CDATA[18:42:13.087 [main] INFO com.fbp.engine.core.FlowEngine -- [Engine] 플로우 flow-test 등록됨
-]]></system-out>
-  </testcase>
-  <testcase name="register_flow" classname="com.fbp.engine.core.FlowEngineTest" time="0.0">
-    <system-out><![CDATA[18:42:13.089 [main] INFO com.fbp.engine.core.FlowEngine -- [Engine] 플로우 flow-test 등록됨
-]]></system-out>
-  </testcase>
-  <testcase name="list" classname="com.fbp.engine.core.FlowEngineTest" time="0.005">
-    <system-out><![CDATA[18:42:13.090 [main] INFO com.fbp.engine.core.FlowEngine -- [Engine] 플로우 flow-test 등록됨
-]]></system-out>
-  </testcase>
-  <testcase name="startFlow_success" classname="com.fbp.engine.core.FlowEngineTest" time="0.001"/>
-  <testcase name="state_initialized" classname="com.fbp.engine.core.FlowEngineTest" time="0.0"/>
-  <testcase name="shutdown_all" classname="com.fbp.engine.core.FlowEngineTest" time="0.001"/>
-  <testcase name="stopFlow_success" classname="com.fbp.engine.core.FlowEngineTest" time="0.001"/>
-  <testcase name="multi_flow" classname="com.fbp.engine.core.FlowEngineTest" time="0.001"/>
-  <testcase name="startFlow_validate_fail" classname="com.fbp.engine.core.FlowEngineTest" time="0.0"/>
+  <testcase name="ports_exist" classname="com.fbp.engine.node.MergeNodeTest" time="0.001"/>
+  <testcase name="merge_messages" classname="com.fbp.engine.node.MergeNodeTest" time="0.0"/>
+  <testcase name="receive_both_inputs" classname="com.fbp.engine.node.MergeNodeTest" time="0.001"/>
+  <testcase name="wait_if_one_side_missing" classname="com.fbp.engine.node.MergeNodeTest" time="0.0"/>
 </testsuite>
