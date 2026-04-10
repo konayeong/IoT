@@ -10,7 +10,7 @@ public class Connection {
     @Getter
     private final String id;
     private final BlockingQueue<Message> buffer;
-    @Setter
+    @Setter @Getter
     private InputPort target;
 
     public Connection(String id) {

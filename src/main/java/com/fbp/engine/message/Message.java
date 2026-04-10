@@ -9,7 +9,7 @@ import java.util.UUID;
 @Getter
 public class Message {
     private final String id;
-    private final Map<String, Object> payload;
+    private final Map<String, Object> payload; // Map : 데이터 형태가 계속 바뀜
     private final long timestamp;
 
 
@@ -19,7 +19,7 @@ public class Message {
         this.timestamp = System.currentTimeMillis();
     }
 
-    // payload 값 꺼내기
+    // payload 값 꺼내기 ( 제네릭 -> 꺼낼 때 매번 캐스팅 안해도 됨 )
     public <T> T get(String key) {
         return (T) payload.get(key);
     }

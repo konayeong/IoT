@@ -6,7 +6,7 @@ import java.util.List;
 public class Step4_1 {
     private static List<String> buffer = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void run() {
         Thread producer = new Thread(() -> {
             for (int i = 0; i < 100; i++) {
                 String msg = "메시지-" + i;

@@ -7,7 +7,7 @@ public class Step4_2B {
 
     static BlockingQueue<String> queue = new LinkedBlockingQueue<>();
 
-    public static void main(String[] args) {
+    public static void run() {
         System.out.println("==== Step4-2-B ====");
 
         Thread producer = new Thread(() -> {

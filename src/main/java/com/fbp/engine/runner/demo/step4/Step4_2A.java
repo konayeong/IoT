@@ -7,7 +7,7 @@ public class Step4_2A {
 
     private static List<String> buffer = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void run() {
         System.out.println("==== Step-4-2-A ====");
 
         // 데이터 넣으면 notify()

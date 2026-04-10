@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+@Getter
 public class Flow {
     private enum State {
         UNVISITED,
@@ -14,16 +16,19 @@ public class Flow {
         VISITED
     }
 
+    public enum FlowState {
+        RUNNING,
+        STOPPED
+    }
+
     private String id;
-    @Getter
-    private final Map<String, AbstractNode> nodes;
-    @Getter
-    private final List<Connection> connections;
+    private final Map<String, AbstractNode> nodes = new HashMap<>();
+    private final List<Connection> connections = new ArrayList<>();
+    private FlowState flowState;
 
     public Flow(String id) {
         this.id = id;
-        nodes = new HashMap<>();
-        connections = new ArrayList<>();
+        this.flowState = FlowState.STOPPED;
     }
 
     // 노드 등록
@@ -64,12 +69,14 @@ public class Flow {
         for(AbstractNode node : nodes.values()) {
             node.initialize();
         }
+        this.flowState = FlowState.RUNNING;
     }
 
     public void shutdown() {
         for(AbstractNode node : nodes.values()) {
             node.shutdown();
         }
+        this.flowState = FlowState.STOPPED;
     }
 
     public List<String> validate() {

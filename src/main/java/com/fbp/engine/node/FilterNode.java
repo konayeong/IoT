@@ -2,6 +2,7 @@ package com.fbp.engine.node;
 
 import com.fbp.engine.message.Message;
 
+// 필요없는 데이터는 제거하고 싶을 때
 public class FilterNode extends AbstractNode {
     private final String key;
     private final double threshold;
