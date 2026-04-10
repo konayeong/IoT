@@ -10,13 +10,13 @@ public class GeneratorNode extends AbstractNode {
         addOutputPort("out");
     }
 
-    @Override
-    protected void onProcess(Message message) {
-
-    }
-
     public void generate(String key, Object value) {
         Message message = new Message(Map.of(key, value));
-        send("out", message);
+        this.getOutputPort("out").send(message);
+    }
+
+    @Override
+    protected void onProcess(Message message) {
+        this.getOutputPort("out").send(message);
     }
 }

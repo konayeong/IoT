@@ -5,9 +5,7 @@ import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -60,7 +58,7 @@ class ThresholdFilterNodeTest {
     @Test
     @DisplayName("양쪽 동시 검증")
     void two_verify() {
-        // TODO CollectorNode?
+       // TODO ?
     }
 
 }

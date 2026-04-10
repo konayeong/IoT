@@ -192,6 +192,19 @@
 ### ExecutorService
 - Thread Pool 사용
 
+- Thread
+    - 능동적 노드(데이터를 생성하는)
+        - initialize()에서 생성
+        - shutdown()에서 정리
+        - ex. TimerNode
+    - 수동적 노드
+        - 스레드 없음
+        - 메시지를 받으면 처리만 함
+        - Connection 스레드가 receive() 호출 → process() 실행
+    - Connection의 스레드
+        - FlowEngine이 각 Connection마다 스레드 생성
+        - 수동적 전달 (메시지를 옮기는 역할)만 담당
+      
 # Step9
 ## IoT 시나리오 적용
 > SensorNode, ThresholdFilter, AlertNode, FileWriter
@@ -201,3 +214,10 @@
 # Step10
 ## 통합 테스트 & 리팩토링
 > JUnit 5, CollectorNode, 약 125개 테스트, 리팩토링
+### Collector
+
+- 테스트에서 노드 출력을 검증하기 위한 노드
+- PrintNode 대신 파이프라인 끝에 연결하여 콘솔 출력 없이 메시지 수신 결과를 검증 가능
+
+### 최종 종합
+![iot-fbp-10](./docs/iot-fbp-10.png)

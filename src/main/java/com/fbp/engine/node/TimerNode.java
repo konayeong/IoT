@@ -1,6 +1,7 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.message.Message;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class TimerNode extends AbstractNode{
 
     private final long intervalMs;
+    @Getter
     private int tickCount = 0;
     private ScheduledExecutorService scheduler;
 

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,6 +51,17 @@ class FlowEngineTest {
     @DisplayName("startFlow-없는 ID")
     void startFlow_notFoundId() {
         assertThrows(IllegalArgumentException.class, () -> flowEngine.startFlow("not"));
+    }
+
+    @Test
+    @DisplayName("startFlow - 유효성 실패")
+    void startFlow_validate_fail() {
+        // validate 에러가 있는 Flow
+        Flow flow2 = new Flow("flow2");
+        flowEngine.register(flow2);
+        assertThrows(IllegalStateException.class, () -> {
+            flowEngine.startFlow("flow2");
+        });
     }
 
     @Test
