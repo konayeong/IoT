@@ -151,7 +151,6 @@
 - 전체 흐름은 고정, 핵심만 바꾼다
 - process()가 공통 흐름을 정의하고, 핵심 로직은 하위 클래스에 위임
 
-![iot-fbp-5.png](./docs/iot-fbp-5.png)
 
 # Step6
 
@@ -192,3 +191,13 @@
 
 ### ExecutorService
 - Thread Pool 사용
+
+# Step9
+## IoT 시나리오 적용
+> SensorNode, ThresholdFilter, AlertNode, FileWriter
+### 온도 / 습도 모니터링 플로우
+![iot-fbp-9](./docs/iot-fbp-9.png)
+
+# Step10
+## 통합 테스트 & 리팩토링
+> JUnit 5, CollectorNode, 약 125개 테스트, 리팩토링

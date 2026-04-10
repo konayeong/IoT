@@ -1,6 +1,7 @@
 package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
+import com.fbp.engine.node.AbstractNode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class FlowEngine {
     private State state;
     @Getter
     private Map<String, Flow> flows;
-    private ExecutorService executor = Executors.newCachedThreadPool();
+    private ExecutorService executor = Executors.newCachedThreadPool(); // new Thread()보다 효율적인 스레드 풀 관리
 
     public FlowEngine() {
         state = State.INITIALIZED;
@@ -78,7 +79,7 @@ public class FlowEngine {
             flow.shutdown();
         }
         state = State.STOPPED;
-        executor.shutdownNow();
+        executor.shutdownNow(); // 일괄 종료
     }
 
     public void listFlows() {
