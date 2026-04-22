@@ -2,8 +2,8 @@ package com.fbp.engine.runner.demo.step6;
 
 import com.fbp.engine.core.Connection;
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.PrintNode;
-import com.fbp.engine.node.TimerNode;
+import com.fbp.engine.node.in.PrintNode;
+import com.fbp.engine.node.out.TimerNode;
 import com.fbp.engine.node.utils.SplitNode;
 import com.fbp.engine.core.Flow;
 

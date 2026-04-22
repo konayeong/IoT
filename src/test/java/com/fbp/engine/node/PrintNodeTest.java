@@ -3,6 +3,8 @@ package com.fbp.engine.node;
 import com.fbp.engine.core.Node;
 import com.fbp.engine.message.Message;
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.fbp.engine.node.in.PrintNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

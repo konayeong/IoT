@@ -1,7 +1,7 @@
 package com.fbp.engine.runner.demo;
 
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.PrintNode;
+import com.fbp.engine.node.in.PrintNode;
 
 import java.util.HashMap;
 import java.util.Map;

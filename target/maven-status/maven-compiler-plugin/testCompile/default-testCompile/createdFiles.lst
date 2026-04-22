@@ -14,6 +14,7 @@ com/fbp/engine/core/ConnectionTest.class
 com/fbp/engine/node/TimerNodeTest.class
 com/fbp/engine/node/GeneratorNodeTest.class
 com/fbp/engine/core/impl/DefaultOutputPortTest.class
+com/fbp/engine/AppTest$message.class
 com/fbp/engine/node/TemperatureSensorNodeTest.class
 com/fbp/engine/node/utils/CounterNodeTest.class
 com/fbp/engine/message/MessageTest$withEntry.class

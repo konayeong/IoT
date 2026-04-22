@@ -1,6 +1,7 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.message.Message;
+import com.fbp.engine.node.in.AlertNode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

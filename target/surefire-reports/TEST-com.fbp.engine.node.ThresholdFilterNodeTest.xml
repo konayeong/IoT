@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.005" tests="5" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.004" tests="5" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -13,7 +13,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="KR"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/chosun-nhn55/Desktop/iot/fbp-engine/target/surefire/surefirebooter-20260410184125250_3.jar /Users/chosun-nhn55/Desktop/iot/fbp-engine/target/surefire 2026-04-10T18-41-25_212-jvmRun1 surefire-20260410184125250_1tmp surefire_0-20260410184125250_2tmp"/>
+    <property name="sun.java.command" value="/Users/chosun-nhn55/Desktop/iot/fbp-engine/target/surefire/surefirebooter-20260420094929102_3.jar /Users/chosun-nhn55/Desktop/iot/fbp-engine/target/surefire 2026-04-20T09-49-29_059-jvmRun1 surefire-20260420094929102_1tmp surefire_0-20260420094929102_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/chosun-nhn55/Desktop/iot/fbp-engine/target/test-classes:/Users/chosun-nhn55/Desktop/iot/fbp-engine/target/classes:/Users/chosun-nhn55/.m2/repository/org/junit/jupiter/junit-jupiter/5.11.0/junit-jupiter-5.11.0.jar:/Users/chosun-nhn55/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.11.0/junit-jupiter-engine-5.11.0.jar:/Users/chosun-nhn55/.m2/repository/org/junit/platform/junit-platform-engine/1.11.0/junit-platform-engine-1.11.0.jar:/Users/chosun-nhn55/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/Users/chosun-nhn55/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/chosun-nhn55/.m2/repository/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/Users/chosun-nhn55/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/chosun-nhn55/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/Users/chosun-nhn55/.m2/repository/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar:/Users/chosun-nhn55/.m2/repository/ch/qos/logback/logback-classic/1.5.6/logback-classic-1.5.6.jar:/Users/chosun-nhn55/.m2/repository/ch/qos/logback/logback-core/1.5.6/logback-core-1.5.6.jar:/Users/chosun-nhn55/.m2/repository/org/slf4j/slf4j-api/2.0.13/slf4j-api-2.0.13.jar:/Users/chosun-nhn55/.m2/repository/org/mockito/mockito-junit-jupiter/5.20.0/mockito-junit-jupiter-5.20.0.jar:/Users/chosun-nhn55/.m2/repository/org/mockito/mockito-core/5.20.0/mockito-core-5.20.0.jar:/Users/chosun-nhn55/.m2/repository/net/bytebuddy/byte-buddy/1.17.7/byte-buddy-1.17.7.jar:/Users/chosun-nhn55/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.7/byte-buddy-agent-1.17.7.jar:/Users/chosun-nhn55/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:"/>
@@ -30,7 +30,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/chosun-nhn55/Desktop/iot/fbp-engine/target/surefire/surefirebooter-20260410184125250_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/chosun-nhn55/Desktop/iot/fbp-engine/target/surefire/surefirebooter-20260420094929102_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="21.0.8+9-LTS"/>
@@ -59,8 +59,8 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="normal_port_equals" classname="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.0"/>
-  <testcase name="normal_port" classname="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.001"/>
+  <testcase name="normal_port_equals" classname="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.001"/>
+  <testcase name="normal_port" classname="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.0"/>
   <testcase name="two_verify" classname="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.0"/>
   <testcase name="not_exists_key" classname="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.001"/>
   <testcase name="alert_port" classname="com.fbp.engine.node.ThresholdFilterNodeTest" time="0.001"/>

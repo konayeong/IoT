@@ -1,7 +1,7 @@
 package com.fbp.engine.core;
 
-import com.fbp.engine.node.FilterNode;
-import com.fbp.engine.node.PrintNode;
+import com.fbp.engine.node.utils.FilterNode;
+import com.fbp.engine.node.in.PrintNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

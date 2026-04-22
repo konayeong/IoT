@@ -7,13 +7,11 @@ import com.fbp.engine.core.impl.DefaultInputPort;
 import com.fbp.engine.core.impl.DefaultOutputPort;
 import com.fbp.engine.message.Message;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 public abstract class AbstractNode implements Node {
-
     private String id;
     private Map<String, InputPort> inputPorts = new HashMap<>();
     private Map<String, OutputPort> outputPorts = new HashMap<>();

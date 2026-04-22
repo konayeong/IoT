@@ -4,7 +4,6 @@
 ## 환경 구축 & FBP 개념
 
 > Maven 프로젝트 생성, 패키지 구조, FBP 5요소 이해
->
 
 ### FBP
 
@@ -22,6 +21,7 @@
 ### 과제
 
 1. FBP 엔진에 필요한 핵심 클래스 목록
+
 ![diagram](./docs/iot-fbp-diagram.png)
 
 | 소속 패키지 | 클래스/인터페이스 | 역할 |
@@ -51,8 +51,7 @@
     - FlowEngine이 Flow 안의 노드들을 꺼내서, 각 노드마다 Thread를 하나씩 생성하고 실행
     - 즉, **노드 수만큼 스레드를 켜는 것**
 
-# Step2
-
+## Step2
 ## Node / Message 설계
 
 > 인터페이스·제네릭, Message(불변), PrintNode
@@ -79,7 +78,7 @@
 - 데이터 생성 추적 가능
 - 시간 기반 처리 가능
 
-# Step3
+## Step3
 
 ## Port & Connection 설계
 
@@ -106,7 +105,7 @@
 
 ![iot-fbp-3-8.png](./docs/iot-fbp-3-8.png)
 
-# Step4
+## Step4
 
 ## 스레드 기초 & 동시성
 
@@ -136,7 +135,7 @@
 | synchronized + wait/notify | 김 | 복잡 | ⭕ 낮음 |
 | BlockingQueue | 매우 짧음 | 단순 | ⭕ 낮음 |
 
-# Step5
+## Step5
 
 ## AbstractNode & 설계 패턴
 
@@ -152,7 +151,7 @@
 - process()가 공통 흐름을 정의하고, 핵심 로직은 하위 클래스에 위임
 
 
-# Step6
+## Step6
 
 ## 노드 라이브러리 확장
 
@@ -167,7 +166,7 @@
 
 ![iot-fbp-6-4.png](./docs/iot-fbp-6-4.png)
 
-# Step7
+## Step7
 ## Flow 클래스 & 그래프 구조
 > Flow, 메서드 체이닝, validate, 순환 참조 탐지(DFS)
 
@@ -176,7 +175,7 @@
 - 구조 관리(노드, 연결)
 - 생명주기 관리
 
-# Step8
+## Step8
 ## FlowEngine 구현
 > ExecutorService, 상태 관리, 다중 플로우, CLI
 
@@ -205,7 +204,7 @@
         - FlowEngine이 각 Connection마다 스레드 생성
         - 수동적 전달 (메시지를 옮기는 역할)만 담당
       
-# Step9
+## Step9
 ## IoT 시나리오 적용
 > SensorNode, ThresholdFilter, AlertNode, FileWriter
 ### 온도 / 습도 모니터링 플로우
@@ -221,3 +220,8 @@
 
 ### 최종 종합
 ![iot-fbp-10](./docs/iot-fbp-10.png)
+
+# Stage 2
+## Step3
+## MODBUS
+![modbus-tcp](./docs/modbus-tcp-frame.png)

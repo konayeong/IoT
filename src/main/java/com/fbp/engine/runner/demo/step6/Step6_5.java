@@ -2,8 +2,12 @@ package com.fbp.engine.runner.demo.step6;
 
 import com.fbp.engine.core.Connection;
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.*;
 import com.fbp.engine.core.Flow;
+import com.fbp.engine.node.in.PrintNode;
+import com.fbp.engine.node.out.TimerNode;
+import com.fbp.engine.node.utils.FilterNode;
+import com.fbp.engine.node.utils.LogNode;
+
 // Step 7-2 재구성
 public class Step6_5 {
     public static void run() throws InterruptedException {
