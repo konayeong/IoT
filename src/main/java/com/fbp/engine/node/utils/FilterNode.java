@@ -28,6 +28,4 @@ public class FilterNode extends AbstractNode {
             send("out", message);
         }
     }
-
-
 }

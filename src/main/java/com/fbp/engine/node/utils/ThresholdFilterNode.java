@@ -23,7 +23,8 @@ public class ThresholdFilterNode extends AbstractNode {
             return;
         }
 
-        double value = message.get(fieldName);
+        Number num = message.get(fieldName);
+        double value = num.doubleValue();
 
         if(value > threshold) {
             send("alert", message);

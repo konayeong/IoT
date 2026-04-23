@@ -46,13 +46,6 @@ public class ModbusTcpSimulator {
         }
     }
 
-    /**
-     * ① MBAP 헤더 수신
-     * ② Function Code에 따라 분기
-     * ③ FC 03: 요청된 주소/개수만큼 registers에서 읽어 응답 조립/전송
-     * ④ FC 06: 요청된 주소에 값 기록, 에코백 응답 전송
-     * ⑤ 잘못된 주소면 에러 응답(Exception Code 0x02) 전송
-     */
     public void handleClient(Socket socket) {
         try (DataInputStream in = new DataInputStream(socket.getInputStream());
              DataOutputStream out = new DataOutputStream(socket.getOutputStream())) {

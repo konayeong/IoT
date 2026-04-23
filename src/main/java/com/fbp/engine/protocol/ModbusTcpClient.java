@@ -13,6 +13,7 @@ public class ModbusTcpClient {
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
+
     private int transactionId = 0; // 매 요청마다 1 증가
 
     public ModbusTcpClient(String host, int port) {
@@ -35,30 +36,15 @@ public class ModbusTcpClient {
         return socket != null && socket.isConnected() && !socket.isClosed();
     }
 
-    // FC 03 요청/응답
+    // === FC 03 요청/응답 ===
     public int[] readHoldingRegisters(int unitId, int startAddress, int quantity) throws IOException, ModbusException {
-        int tid = transactionId++;
+        byte[] request = buildReadRequest(unitId, startAddress, quantity);
 
-        // 1. FC 03 요청 프레임 조립 (MBAP 헤더 + PDU)
-        // PDU
-        ByteArrayOutputStream pdu = new ByteArrayOutputStream();
-        DataOutputStream pd = new DataOutputStream(pdu);
-
-        pd.writeByte(0x03);
-        pd.writeShort(startAddress);
-        pd.writeShort(quantity);
-
-        byte[] pduBytes = pdu.toByteArray();
-
-        // MBAP
-        byte[] mbap = buildMbapHeader(tid, pduBytes.length + 1, unitId);
-
-        // 2. 소켓으로 전송
-        out.write(mbap);
-        out.write(pduBytes);
+        // 소켓으로 전송
+        out.write(request);
         out.flush();
 
-        // 3. 응답 프레임 수신 및 파싱
+        // 응답 프레임 수신 및 파싱
         readMapHeader();
         int function = in.readUnsignedByte();
 
@@ -75,7 +61,7 @@ public class ModbusTcpClient {
         }
         int byteCnt = in.readUnsignedByte();
 
-        // 5. int[] 배열로 레지스터 값 반환
+        // int[] 배열로 레지스터 값 반환
         int[] result = new int[byteCnt / 2];
 
         for(int i=0; i<result.length; i++) {
@@ -87,23 +73,9 @@ public class ModbusTcpClient {
 
     // FC 06 요청/응답
     public void writeSingleRegister(int unitId, int address, int value) throws IOException, ModbusException {
-        int tid = transactionId++;
+        byte[] request = buildWriteRequest(unitId, address, value);
 
-        // 1. FC 06 요청 프레임 조립
-        ByteArrayOutputStream pdu = new ByteArrayOutputStream();
-        DataOutputStream pd = new DataOutputStream(pdu);
-
-        pd.writeByte(0x06);
-        pd.writeShort(address);
-        pd.writeShort(value);
-
-        byte[] pduBytes = pdu.toByteArray();
-
-        byte[] mbap = buildMbapHeader(tid, pduBytes.length + 1, unitId);
-
-        // 2. 소켓으로 전송
-        out.write(mbap);
-        out.write(pduBytes);
+        out.write(request);
         out.flush();
 
         // 3. 응답 프레임 수신
@@ -126,6 +98,46 @@ public class ModbusTcpClient {
         }
     }
 
+    // 프레임 생성
+    public byte[] buildReadRequest(int unitId, int startAddress, int quantity) throws IOException {
+        int tid = transactionId++;
+
+        // FC 03 요청 프레임 조립 (MBAP 헤더 + PDU)
+        // PDU
+        ByteArrayOutputStream pdu = new ByteArrayOutputStream();
+        DataOutputStream pd = new DataOutputStream(pdu);
+
+        pd.writeByte(0x03);
+        pd.writeShort(startAddress);
+        pd.writeShort(quantity);
+
+        return buildFrame(tid, unitId, pdu.toByteArray());
+    }
+
+    public byte[] buildWriteRequest(int unitId, int address, int value) throws IOException {
+        int tid = transactionId++;
+
+        ByteArrayOutputStream pdu = new ByteArrayOutputStream();
+        DataOutputStream pd = new DataOutputStream(pdu);
+
+        pd.writeByte(0x06);
+        pd.writeShort(address);
+        pd.writeShort(value);
+
+        return buildFrame(tid, unitId, pdu.toByteArray());
+    }
+
+    // 공통 프레임 조립 (MBAP + PDU)
+    private byte[] buildFrame(int transactionId, int unitId, byte[] pduBytes) throws IOException {
+        byte[] mbap = buildMbapHeader(transactionId, pduBytes.length + 1, unitId);
+
+        ByteArrayOutputStream frame = new ByteArrayOutputStream();
+        frame.write(mbap);
+        frame.write(pduBytes);
+
+        return frame.toByteArray();
+    }
+
     // MBAP 헤더 7바이트를 읽어 파싱
     private byte[] buildMbapHeader(int transactionId, int length, int unitId) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -141,10 +153,9 @@ public class ModbusTcpClient {
 
     // 응답에서 MBAP 헤더 7바이트를 읽어 파싱 -> 다음 PDU를 읽을 위치로 커서를 이동
     private void readMapHeader() throws IOException {
-        int tid = in.readUnsignedShort();
-        int pid = in.readUnsignedShort();
-        int len = in.readUnsignedShort();
-        int unitId = in.readUnsignedByte();
+        in.readUnsignedShort(); // tid
+        in.readUnsignedShort(); // pid
+        in.readUnsignedShort(); // length
+        in.readUnsignedByte();  // unitId
     }
-
 }
