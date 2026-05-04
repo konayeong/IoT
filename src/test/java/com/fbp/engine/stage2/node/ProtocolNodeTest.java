@@ -71,7 +71,7 @@ class ProtocolNodeTest {
     @Test
     @DisplayName("initialize -> 연결 실패 시 상태")
     void initialize_failed_ERROR() {
-
+        // TODO-T
     }
 
     @Test

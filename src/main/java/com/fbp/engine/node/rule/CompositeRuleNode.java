@@ -1,12 +1,15 @@
-package com.fbp.engine.node;
+package com.fbp.engine.node.rule;
 
 import com.fbp.engine.core.rule.RuleExpression;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.node.AbstractNode;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class CompositeRuleNode extends AbstractNode{
+// 복합 규칙
+public class CompositeRuleNode extends AbstractNode {
 
     private enum Operator {
         AND,
@@ -30,17 +33,18 @@ public class CompositeRuleNode extends AbstractNode{
 
     public void addCondition(String field, String op, Object value) {
         RuleExpression expression = new RuleExpression(field, op, value);
-        // TODO 다시 확인 필요
         conditions.add(expression::evaluate);
     }
 
     @Override
     protected void onProcess(Message message) {
-        boolean result;
+        boolean result = false;
 
         if(operator.equals(Operator.AND)) {
            result = conditions.stream().allMatch(con -> con.test(message));
-        }else {
+        }
+
+        if(operator.equals(Operator.OR)) {
             result = conditions.stream().anyMatch(con -> con.test(message));
         }
 

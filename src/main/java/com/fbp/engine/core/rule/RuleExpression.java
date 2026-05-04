@@ -1,14 +1,17 @@
 package com.fbp.engine.core.rule;
 
 import com.fbp.engine.message.Message;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public class RuleExpression {
     private final String field;
     private final String operator;
     private final Object value;
 
+    // 문자열 조건식 파싱
     public static RuleExpression parse(String expression) {
         String[] parts = expression.trim().split("\\s+", 3); // "\\s+" : 하나 이상의 연속된 공백을 기준으로 문자열 분리
 
@@ -19,6 +22,7 @@ public class RuleExpression {
         return new RuleExpression(parts[0], parts[1], parts[2]); // [0]=field, [1]=operator, [2]=value
     }
 
+    // 조건 평가, 결과 반환
     public boolean evaluate(Message message) {
         Object fieldValue = message.get(field);
         if (fieldValue == null) return false;

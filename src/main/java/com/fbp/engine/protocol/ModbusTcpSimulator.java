@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+// TODO-R
+// ServerSocket으로 연결을 받고, 요청 프레임을 파싱하여 레지스터 값을 돌려주는 프로그램
 public class ModbusTcpSimulator {
 
     private final int port;
-    private final int[] registers;
+    private final int[] registers; // 레지스터 저장소
 
     private ServerSocket serverSocket;
     // volatile : Main Memory에 read & write를 보장하는 키워드
@@ -22,7 +24,7 @@ public class ModbusTcpSimulator {
     }
 
     public void start() throws IOException {
-        serverSocket = new ServerSocket(port);
+        serverSocket = new ServerSocket(port); // 클라이언트 연결 대기
         running = true;
 
         Thread t = new Thread(() -> {

@@ -6,6 +6,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+// TODO-R
+// MODBUS TCP 프로토콜을 소켓으로 직접 구현하는 클라이언트 클래스
 public class ModbusTcpClient {
     private String host;
     private int port;
@@ -21,6 +23,7 @@ public class ModbusTcpClient {
         this.port = port;
     }
 
+    // TCP 소켓 연결
     public void connect() throws IOException {
         socket = new Socket(host, port);
         socket.setSoTimeout(3000);
@@ -28,10 +31,12 @@ public class ModbusTcpClient {
         in = new DataInputStream(socket.getInputStream());
     }
 
+    // 소켓 종료
     public void disconnect() throws IOException {
         if (socket != null) socket.close();
     }
 
+    // 연결 상태 확인
     public boolean isConnected() {
         return socket != null && socket.isConnected() && !socket.isClosed();
     }
@@ -98,12 +103,10 @@ public class ModbusTcpClient {
         }
     }
 
-    // 프레임 생성
+    // FC 03 요청 프레임 조립 (MBAP 헤더 + PDU)
     public byte[] buildReadRequest(int unitId, int startAddress, int quantity) throws IOException {
         int tid = transactionId++;
 
-        // FC 03 요청 프레임 조립 (MBAP 헤더 + PDU)
-        // PDU
         ByteArrayOutputStream pdu = new ByteArrayOutputStream();
         DataOutputStream pd = new DataOutputStream(pdu);
 
@@ -114,6 +117,7 @@ public class ModbusTcpClient {
         return buildFrame(tid, unitId, pdu.toByteArray());
     }
 
+    // FC 06 요청 프레임 조립
     public byte[] buildWriteRequest(int unitId, int address, int value) throws IOException {
         int tid = transactionId++;
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DefaultOutputPort implements OutputPort {
     private final String name;
-    private final List<Connection> connectionList = new ArrayList<>();
+    private final List<Connection> connectionList = new ArrayList<>(); // 1:N 전송
 
     public DefaultOutputPort(String name) {
         this.name = name;

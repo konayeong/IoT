@@ -8,6 +8,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * MODBUS 장비에서 레지스터 값을 읽어 FBP 플로우에 주입하는 노드
+ * "trigger" 포트로 메시지를 받을 때마다 레지스터를 읽음
+ * config
+ * host(S), port(i, 502), slaveId(i), startAddress(i), count(i), registerMapping(Map<S,O>, 선택)
+ */
+
 public class ModbusReaderNode extends ProtocolNode {
 
     private ModbusTcpClient client;
@@ -22,7 +29,7 @@ public class ModbusReaderNode extends ProtocolNode {
     @Override
     protected void connect() throws Exception {
         String host = (String) getConfig("host");
-        int port = getConfig("port") == null ? 5020 : (int) getConfig("port");
+        int port = getConfig("port") == null ? 502 : (int) getConfig("port");
         client = new ModbusTcpClient(host, port);
 
         client.connect();

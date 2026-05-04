@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+// 노드 간 전달되는 데이터 패킷 - !불변!
 @Getter
 public class Message {
     private final String id;

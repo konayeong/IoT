@@ -1,19 +1,31 @@
-package com.fbp.engine.node;
+package com.fbp.engine.node.rule;
 
+import com.fbp.engine.core.rule.RuleExpression;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.node.AbstractNode;
 
+import java.util.Map;
 import java.util.function.Predicate;
 
-public class RuleNode extends AbstractNode{
+public class RuleNode extends AbstractNode {
 
     private final Predicate<Message> condition;
 
+    // Predicate 기반
     public RuleNode(String id, Predicate<Message> condition) {
         super(id);
         this.condition = condition;
         addInputPort("in");
         addOutputPort("match");
         addOutputPort("mismatch");
+    }
+
+    // 문자열 기반 조건식
+    public RuleNode(String id, String condition) {
+        super(id);
+        // TODO-R
+        RuleExpression expression = RuleExpression.parse(condition);
+        this.condition = expression::evaluate;
     }
 
     @Override

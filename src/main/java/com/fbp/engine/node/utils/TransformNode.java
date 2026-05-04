@@ -5,6 +5,7 @@ import com.fbp.engine.node.AbstractNode;
 
 import java.util.function.Function;
 
+// 데이터 변환 수행
 public class TransformNode extends AbstractNode {
 
     private Function<Message, Message> transformer;

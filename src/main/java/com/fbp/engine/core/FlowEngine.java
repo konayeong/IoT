@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// FBP 엔진의 최상위 관리자
 @Slf4j
 public class FlowEngine {
     // 엔진 상태 관리

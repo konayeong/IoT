@@ -75,12 +75,6 @@
             <version>1.2.5</version>
         </dependency>
 
-<!--      <dependency>-->
-<!--          <groupId>org.eclipse.paho</groupId>-->
-<!--          <artifactId>org.eclipse.paho.client.mqttv3</artifactId>-->
-<!--          <version>1.2.5</version>-->
-<!--      </dependency>-->
-
       <!-- MODBUS: 외부 라이브러리 없음 — java.net.Socket으로 직접 구현 -->
 
       <!-- JSON (Jackson) -->

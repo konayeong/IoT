@@ -27,11 +27,11 @@ public abstract class AbstractNode implements Node {
 
     @Override
     public void process(Message message) {
-        System.out.println("[" + id + "] processing message...");
+        System.out.println("[" + id + "] processing message..."); // 전처리
 
-        onProcess(message);
+        onProcess(message); // 핵심 로직 (하위 클래스에 위임)
 
-        System.out.println("[" + id + "] processing complete.");
+        System.out.println("[" + id + "] processing complete."); // 후처리
     }
 
     @Override
@@ -69,5 +69,5 @@ public abstract class AbstractNode implements Node {
         outputPort.send(message);
     }
 
-    protected abstract void  onProcess(Message message);
+    protected abstract void onProcess(Message message);
 }

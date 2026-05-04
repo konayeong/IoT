@@ -210,7 +210,7 @@
 ### 온도 / 습도 모니터링 플로우
 ![iot-fbp-9](./docs/iot-fbp-9.png)
 
-# Step10
+## Step10
 ## 통합 테스트 & 리팩토링
 > JUnit 5, CollectorNode, 약 125개 테스트, 리팩토링
 ### Collector
@@ -222,6 +222,50 @@
 ![iot-fbp-10](./docs/iot-fbp-10.png)
 
 # Stage 2
+
+## Step2
+## MQTT
+> 센서가 데이터를 발행(Publish)하면 관심 있는 시스템이 해당 주제를 구독(Subscribe)하여 수신하는 구조
+- Broker : 메시지 중개자. 발행자와 구독자를 연결
+- Topic : 메시지 주소, 계층 구조
+  - sensor/+ : 와일드카드, sensor/ 아래 모든 하위 토픽
+  - sensor/# : 다중 레벨 와일드카드, sensor/ 아래 모든 레벨
+- QoS : 메시지 전달 보장 수준 (0,1,2)
+- Retained Message : Broker가 토픽의 마지막 메시지 저장
+- Last Will and Testament (LWT) : 클라이언트 비정상 종료 시 Broker가 미리 등록된 유언 메시지를 발행
+
 ## Step3
 ## MODBUS
-![modbus-tcp](./docs/modbus-tcp-frame.png)
+> 마스터(엔진)가 슬레이브(장비)에게 요청을 보내면 슬레이브가 응답
+
+### MODBUS TCP 프레임 구조
+- MBAP Header (7byte)
+    - MODBUS TCP 고유의 헤더
+    - 모든 요청과 응답에 포함
+
+        ```java
+        바이트 위치:  [0][1]     [2][3]    [4][5]          [6]
+                   ──────     ──────    ──────          ───
+        의미:       트랜잭션 ID  프로토콜 ID  길이(이후 바이트수) 유닛 ID
+                   (2byte)    (2byte)   (2byte)         (1byte)
+        ```
+
+      | **필드** | **크기** | **설명** |
+              | --- | --- | --- |
+      | Transaction ID | 2 바이트 | 요청/응답 쌍을 식별. 요청에서 보낸 값이 응답에 그대로 돌아옴 |
+      | Protocol ID | 2 바이트 | 항상 `0x0000` (MODBUS 프로토콜) |
+      | Length | 2 바이트 | 이 필드 이후의 바이트 수 (Unit ID + PDU 길이) |
+      | Unit ID | 1 바이트 | 슬레이브 ID. TCP에서는 보통 `0x01` 또는 `0xFF` |
+
+- PDU (5 byte)
+- 과제 3-1
+  ![modbus-tcp](./docs/modbus-tcp-frame.png)
+
+## Step 4
+## Rule
+### RuleNode
+> 조건식을 평가하여 메시지의 경로를 결정하는 노드
+- 규칙 표현 방식
+  - A. Java Predicate 기반 (코드 내 정의)
+  - B. 문자열 기반 조건식 : 조건식 파서 구현 필요
+  - C. 복합 규칙 (AND/OR) : 다중 조건 조합 가능

@@ -29,8 +29,7 @@ public class MqttSubScriberNode extends ProtocolNode {
 
             this.client = new MqttClient(
                     brokerUrl,
-                    clientId,
-                    new MemoryPersistence()
+                    clientId // clientId : Broker 내에서 고유해야 함
             );
 
         } catch (Exception e) {
@@ -70,7 +69,7 @@ public class MqttSubScriberNode extends ProtocolNode {
                     String payloadStr = new String(message.getPayload());
                     Map<String, Object> payload = parsePayload(payloadStr);
 
-                    payload.put("topic", topic);
+                    payload.put("topic", topic); // 다음 노드가 토픽별 분기 가능
                     payload.put("mqttTimestamp", System.currentTimeMillis());
 
                     send("out", new Message(payload));

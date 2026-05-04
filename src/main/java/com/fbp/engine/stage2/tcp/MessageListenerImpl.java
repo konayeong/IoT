@@ -27,6 +27,5 @@ public class MessageListenerImpl implements MessageListener{
 
     @Override
     public void onConnectionLost(Throwable cause) {
-
     }
 }

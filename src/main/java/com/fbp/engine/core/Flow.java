@@ -7,22 +7,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// 노드와 연결을 하나의 단위로 묶어 관리
 @Getter
 public class Flow {
+    // 노드 방문 상태 (순환 판단)
     private enum State {
         UNVISITED,
         VISITING,
         VISITED
     }
-
+    
     public enum FlowState {
         RUNNING,
         STOPPED
     }
 
     private String id;
-    private final Map<String, AbstractNode> nodes = new HashMap<>();
-    private final List<Connection> connections = new ArrayList<>();
+    private final Map<String, AbstractNode> nodes = new HashMap<>(); // 등록된 노드
+    private final List<Connection> connections = new ArrayList<>(); // 생성된 연결
     private FlowState flowState;
 
     public Flow(String id) {
@@ -30,10 +32,9 @@ public class Flow {
         this.flowState = FlowState.STOPPED;
     }
 
-    // 노드 등록
     public Flow addNode(AbstractNode node) {
         nodes.put(node.getId(), node);
-        return this;
+        return this; // 메서드 체이닝 지원
     }
 
     // 연결 생성 - "소스노드ID:포트이름" -> "대상노드ID:포트이름"
@@ -53,7 +54,7 @@ public class Flow {
         if(sourceNodePort == null || targetNodePort == null) {
             throw new IllegalArgumentException("포트가 존재하지 않습니다.");
         }
-        // connect 생성 ?!
+        // connect 생성
         String connId = String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort);
         Connection connection = new Connection(connId);
         connection.setTarget(targetNodePort);
