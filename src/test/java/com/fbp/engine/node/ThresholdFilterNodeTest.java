@@ -1,6 +1,6 @@
 package com.fbp.engine.node;
 
-import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.utils.ThresholdFilterNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ThresholdFilterNodeTest {
 
     private ThresholdFilterNode node;
-    private Connection conn1;
-    private Connection conn2;
+    private LocalConnection conn1;
+    private LocalConnection conn2;
 
     @BeforeEach
     void setUp() {
         node = new ThresholdFilterNode("filter", "check", 30.0);
-        conn1 = new Connection("conn1");
-        conn2 = new Connection("conn2");
+        conn1 = new LocalConnection("conn1");
+        conn2 = new LocalConnection("conn2");
 
         node.getOutputPort("alert").connect(conn1);
         node.getOutputPort("normal").connect(conn2);

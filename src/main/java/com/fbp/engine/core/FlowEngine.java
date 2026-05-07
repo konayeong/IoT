@@ -1,7 +1,7 @@
 package com.fbp.engine.core;
 
+import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.AbstractNode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class FlowEngine {
 
         flow.initialize();
 
-        for(Connection conn : flow.getConnections()) {
+        for(LocalConnection conn : flow.getConnections()) {
             executor.submit(() -> {
                 while(flow.getFlowState() == Flow.FlowState.RUNNING) {
                     Message msg = conn.poll();

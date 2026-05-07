@@ -1,5 +1,8 @@
 package com.fbp.engine.core;
 
+import com.fbp.engine.core.conn.LocalConnection;
+import com.fbp.engine.core.port.InputPort;
+import com.fbp.engine.core.port.OutputPort;
 import com.fbp.engine.node.AbstractNode;
 import lombok.Getter;
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ public class Flow {
         VISITING,
         VISITED
     }
-    
+
     public enum FlowState {
         RUNNING,
         STOPPED
@@ -24,7 +27,7 @@ public class Flow {
 
     private String id;
     private final Map<String, AbstractNode> nodes = new HashMap<>(); // 등록된 노드
-    private final List<Connection> connections = new ArrayList<>(); // 생성된 연결
+    private final List<LocalConnection> connections = new ArrayList<>(); // 생성된 연결
     private FlowState flowState;
 
     public Flow(String id) {
@@ -56,7 +59,10 @@ public class Flow {
         }
         // connect 생성
         String connId = String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort);
-        Connection connection = new Connection(connId);
+
+        // 3+ (BridgeConnectionFactory)
+
+        LocalConnection connection = new LocalConnection(connId);
         connection.setTarget(targetNodePort);
         sourceNodePort.connect(connection);
 
@@ -87,7 +93,7 @@ public class Flow {
         }
 
         // connect
-        for(Connection conn : connections) {
+        for(LocalConnection conn : connections) {
             String id = conn.getId();
 
             String[] parts = id.split("->");
@@ -117,7 +123,7 @@ public class Flow {
             graph.put(id, new ArrayList<>());
         }
 
-        for (Connection conn : connections) {
+        for (LocalConnection conn : connections) {
             String[] parts = conn.getId().split("->");
             String source = parts[0].split(":")[0];
             String target = parts[1].split(":")[0];

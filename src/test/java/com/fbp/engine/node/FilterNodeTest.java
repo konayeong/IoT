@@ -1,6 +1,6 @@
 package com.fbp.engine.node;
 
-import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.utils.FilterNode;
 import org.junit.jupiter.api.Assertions;
@@ -15,12 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilterNodeTest {
 
     private FilterNode node;
-    private Connection connection;
+    private LocalConnection connection;
 
     @BeforeEach
     void setUp() {
         node = new FilterNode("filter-1", "temperature", 20);
-        connection = new Connection("conn");
+        connection = new LocalConnection("conn");
         node.getOutputPort("out").connect(connection);
     }
     @Test

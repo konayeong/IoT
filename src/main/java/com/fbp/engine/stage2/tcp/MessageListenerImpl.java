@@ -1,6 +1,6 @@
 package com.fbp.engine.stage2.tcp;
 
-import com.fbp.engine.core.OutputPort;
+import com.fbp.engine.core.port.OutputPort;
 import com.fbp.engine.message.Message;
 import lombok.RequiredArgsConstructor;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package com.fbp.engine.runner.demo.step6;
 
-import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.in.PrintNode;
 import com.fbp.engine.node.out.TimerNode;
@@ -27,9 +27,9 @@ public class Step6_4 {
 
         flow.initialize();
 
-        Connection conn1 = flow.getConnections().get(0);
-        Connection conn2 = flow.getConnections().get(1);
-        Connection conn3 = flow.getConnections().get(2);
+        LocalConnection conn1 = flow.getConnections().get(0);
+        LocalConnection conn2 = flow.getConnections().get(1);
+        LocalConnection conn3 = flow.getConnections().get(2);
 
 
         Thread split = new Thread(() -> {

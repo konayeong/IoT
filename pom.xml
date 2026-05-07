@@ -68,7 +68,7 @@
           <scope>test</scope>
       </dependency>
 
-      <!-- MQTT Client-->
+      <!-- MQTT -->
         <dependency>
             <groupId>org.eclipse.paho</groupId>
             <artifactId>org.eclipse.paho.mqttv5.client</artifactId>

@@ -1,6 +1,6 @@
 package com.fbp.engine.runner.demo;
 
-import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.utils.FilterNode;
 import com.fbp.engine.node.in.PrintNode;
@@ -12,8 +12,8 @@ public class Step5 {
         FilterNode filterNode = new FilterNode("filter-1", "tick", 3);
         PrintNode printNode = new PrintNode("print-1");
 
-        Connection conn1 = new Connection("conn-1");
-        Connection conn2 = new Connection("conn-2");
+        LocalConnection conn1 = new LocalConnection("conn-1");
+        LocalConnection conn2 = new LocalConnection("conn-2");
 
         conn1.setTarget(filterNode.getInputPort("in"));
         conn2.setTarget(printNode.getInputPort("in"));

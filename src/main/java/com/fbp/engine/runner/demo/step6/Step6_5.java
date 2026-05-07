@@ -1,6 +1,6 @@
 package com.fbp.engine.runner.demo.step6;
 
-import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.node.in.PrintNode;
@@ -31,9 +31,9 @@ public class Step6_5 {
         // initialize
         flow.initialize();
 
-        Connection timerLog = flow.getConnections().get(0);
-        Connection logFilter = flow.getConnections().get(1);
-        Connection filterPrint = flow.getConnections().get(2);
+        LocalConnection timerLog = flow.getConnections().get(0);
+        LocalConnection logFilter = flow.getConnections().get(1);
+        LocalConnection filterPrint = flow.getConnections().get(2);
 
         Thread t1 = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {

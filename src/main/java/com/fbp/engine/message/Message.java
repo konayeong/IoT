@@ -1,7 +1,6 @@
 package com.fbp.engine.message;
 
 import lombok.Getter;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -13,10 +12,9 @@ public class Message {
     private final Map<String, Object> payload; // Map : 데이터 형태가 계속 바뀜
     private final long timestamp;
 
-
     public Message(Map<String, Object> payload) {
         this.id = String.valueOf(UUID.randomUUID());
-        this.payload = Collections.unmodifiableMap(new HashMap<>(payload)); // 불변 복사
+        this.payload = Map.copyOf(payload); // 불변 복사
         this.timestamp = System.currentTimeMillis();
     }
 

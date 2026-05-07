@@ -243,22 +243,22 @@
     - MODBUS TCP 고유의 헤더
     - 모든 요청과 응답에 포함
 
-        ```java
+        ``` 
         바이트 위치:  [0][1]     [2][3]    [4][5]          [6]
                    ──────     ──────    ──────          ───
         의미:       트랜잭션 ID  프로토콜 ID  길이(이후 바이트수) 유닛 ID
                    (2byte)    (2byte)   (2byte)         (1byte)
         ```
 
-      | **필드** | **크기** | **설명** |
-              | --- | --- | --- |
+      | **필드** | **크기** | **설명**                             |
+              | --- | --- |------------------------------------|
       | Transaction ID | 2 바이트 | 요청/응답 쌍을 식별. 요청에서 보낸 값이 응답에 그대로 돌아옴 |
-      | Protocol ID | 2 바이트 | 항상 `0x0000` (MODBUS 프로토콜) |
-      | Length | 2 바이트 | 이 필드 이후의 바이트 수 (Unit ID + PDU 길이) |
-      | Unit ID | 1 바이트 | 슬레이브 ID. TCP에서는 보통 `0x01` 또는 `0xFF` |
+      | Protocol ID | 2 바이트 | 항상`0x0000`(MODBUS 프로토콜)            |
+      | Length | 2 바이트 | 이 필드 이후의 바이트 수 (Unit ID + PDU 길이)  |
+      | Unit ID | 1 바이트 | 슬레이브 ID. TCP에서는 보통 `0x01`또는`0xFF`  |
 
 - PDU (5 byte)
-- 과제 3-1
+
   ![modbus-tcp](./docs/modbus-tcp-frame.png)
 
 ## Step 4
@@ -269,3 +269,83 @@
   - A. Java Predicate 기반 (코드 내 정의)
   - B. 문자열 기반 조건식 : 조건식 파서 구현 필요
   - C. 복합 규칙 (AND/OR) : 다중 조건 조합 가능
+
+- ? FilterNode와 내부 동작이 비슷한데 이름이 RuleNode인 이유
+  - RuleNode는 단순 필터를 넘어서 "비즈니스 규칙"을 표현 
+
+### Rule Engine
+> 규칙들을 실행하는 시스템 전체, 숨낳은 RuleNode들의 집합
+
+# Stage 3
+> 사용자가 JSON/YAML 설정만으로 플로우를 자유롭게 구성하고
+커스텀 노드를 플러그인 형태로 추가할 수 있는 확장형 FBP 엔진을 설계/구현
+
+## Step 1~3 기본 엔진 구현 + 확장 아키텍처 설계
+
+### NodeRegistry
+> 노드 생성 중앙 관리소 역할
+
+- 문자열 타입명과 실제 노드 생성 로직을 연결해주는 역할
+- `typeName → NodeFactory → Node 생성`
+- **NodeFactory**
+    - config를 받아 실제 Node 생성
+    - 노드 생성 함수형 인터페이스
+        - 람다 등록이 가능함
+    - Factory ?
+        - 노드마다 생성 규칙이 다름
+        - 공통 생성 인터페이스가 필요
+
+### Flow 정의 구조
+- 엔진은 외부 JSON/YAML 정의를 읽어서 플로우를 구성(노드 생성, 포트 연결, 플로우 실행)해야 한다
+- 플로우 정의 예시 (JSON)
+
+    ```json
+    {
+      "id": "temperature-monitoring",
+      "name": "온도 모니터링 플로우",
+      "description": "MQTT 센서 데이터를 수신하여 임계값 초과 시 알림",
+      "nodes": [
+        {
+          "id": "sensor",
+          "type": "MqttSubscriber",
+          "config": {
+            "broker": "tcp://localhost:1883",
+            "topic": "sensor/temp",
+            "qos": 1
+          }
+        },
+        {
+          "id": "rule",
+          "type": "ThresholdFilter",
+          "config": {
+            "field": "value",
+            "operator": ">",
+            "threshold": 30
+          }
+        },
+        {
+          "id": "alert",
+          "type": "MqttPublisher",
+          "config": {
+            "broker": "tcp://localhost:1883",
+            "topic": "alert/temp"
+          }
+        }
+      ],
+      "connections": [
+        { "from": "sensor:out", "to": "rule:in" },
+        { "from": "rule:out", "to": "alert:in" }
+      ]
+    }
+    ```
+
+
+### Plugin 구조
+- 외부 JAR만 추가하면 새 노드 타입 자동 등록
+- 엔진 수정 없이 기능 추가
+- 흐름
+    - 외부 jar 추가
+    - Pluginmanager 스캔
+    - ServiceLoader 실행
+    - NodeProvider 발견
+    - NodeRegistry 자동 등록

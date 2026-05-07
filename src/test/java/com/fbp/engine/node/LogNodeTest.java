@@ -1,6 +1,6 @@
 package com.fbp.engine.node;
 
-import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.utils.LogNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LogNodeTest {
     private LogNode logNode;
-    private Connection connection;
+    private LocalConnection connection;
 
     @BeforeEach
     void setUp() {
         logNode = new LogNode("log");
-        connection = new Connection("conn");
+        connection = new LocalConnection("conn");
         logNode.getOutputPort("out").connect(connection);
     }
 
@@ -36,7 +36,7 @@ class LogNodeTest {
     @Test
     @DisplayName("중간 삽입 가능")
     void middle_insert() {
-        Connection connB = new Connection("connB");
+        LocalConnection connB = new LocalConnection("connB");
 
         logNode.getOutputPort("out").connect(connB);
 
