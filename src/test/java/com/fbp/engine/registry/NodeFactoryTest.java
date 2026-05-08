@@ -49,7 +49,7 @@ class NodeFactoryTest {
 
     @Test
     @DisplayName("정상 생성 (람다 구현)")
-    void factory_createsNodeSuccessfully() {
+    void factory_create_success() {
         NodeFactory factory = config -> {
             int value = (int) config.get("value");
             return new TestNode("node", value);
@@ -62,7 +62,7 @@ class NodeFactoryTest {
 
     @Test
     @DisplayName("잘못된 config")
-    void factory_invalidConfig_throwsException() {
+    void factory_invalidConfig_exception() {
         NodeFactory factory = config -> {
             if (!config.containsKey("value")) {
                 throw new IllegalArgumentException("Missing value");

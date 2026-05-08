@@ -1,8 +1,10 @@
 package com.fbp.engine.metrics;
 
+import lombok.Getter;
 import java.util.Map;
 
 // 플로우 전체 메트릭 집계
+@Getter
 public class FlowMetrics {
 
     private final String flowId;
@@ -15,11 +17,4 @@ public class FlowMetrics {
         this.nodeMetrics = nodeMetrics;
     }
 
-    public String getFlowId() {
-        return flowId;
-    }
-
-    public Map<String, NodeMetrics> getNodeMetrics() {
-        return nodeMetrics;
-    }
 }

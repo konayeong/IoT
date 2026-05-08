@@ -56,7 +56,7 @@ class NodeRegistryTest {
 
     @Test
     @DisplayName("register + create")
-    void registerAndCreate_success() {
+    void register_create_success() {
         registry.register("TestNode", config -> { // 팩토리 등록
             int value = (int) config.get("value");
             return new TestNode("node", value);
@@ -71,7 +71,7 @@ class NodeRegistryTest {
 
     @Test
     @DisplayName("미등록 타입 create -> Exception")
-    void create_unregisteredType_throwsException() {
+    void create_unregisteredType_exception() {
         assertThrows(NodeRegistryException.class, () ->
                 registry.create("Unknown", Map.of())
         );
@@ -79,7 +79,7 @@ class NodeRegistryTest {
 
     @Test
     @DisplayName("중복 등록 처리 -> Exception")
-    void register_duplicate_throwsException() {
+    void register_duplicate_exception() {
         registry.register("TestNode", config -> new TestNode("node1", 1));
 
         assertThrows(NodeRegistryException.class, () ->
@@ -89,7 +89,7 @@ class NodeRegistryTest {
 
     @Test
     @DisplayName("등록된 타입 목록 반환")
-    void getRegisteredTypes_returnsCorrectTypes() {
+    void getRegisteredTypes() {
         registry.register("A", config -> new TestNode("node1", 1));
         registry.register("B", config -> new TestNode("node2", 2));
 
@@ -102,7 +102,7 @@ class NodeRegistryTest {
 
     @Test
     @DisplayName("config 전달")
-    void create_passesConfigCorrectly() {
+    void create_config() {
         registry.register("TestNode", config -> {
             int value = (int) config.get("value");
             return new TestNode("node1", value);
@@ -115,7 +115,7 @@ class NodeRegistryTest {
 
     @Test
     @DisplayName("isRegistered")
-    void isRegistered_worksCorrectly() {
+    void isRegistered() {
         registry.register("TestNode", config -> new TestNode("node", 1));
 
         assertTrue(registry.isRegistered("TestNode"));
@@ -124,7 +124,7 @@ class NodeRegistryTest {
 
     @Test
     @DisplayName("null 등록 -> Exception")
-    void register_nullType_throwsException() {
+    void register_nullType_exception() {
         assertThrows(NodeRegistryException.class, () ->
                 registry.register(null, config -> new TestNode("node", 1))
         );
@@ -132,7 +132,7 @@ class NodeRegistryTest {
 
     @Test
     @DisplayName("빈 문자열 등록 -> Exception")
-    void register_blankType_throwsException() {
+    void register_blankType_exception() {
         assertThrows(NodeRegistryException.class, () ->
                 registry.register("   ", config -> new TestNode("node", 1))
         );

@@ -25,7 +25,10 @@ public class Flow {
         STOPPED
     }
 
-    private String id;
+    private final String id;
+    private String name;
+    private String description;
+
     private final Map<String, AbstractNode> nodes = new HashMap<>(); // 등록된 노드
     private final List<LocalConnection> connections = new ArrayList<>(); // 생성된 연결
     private FlowState flowState;
@@ -33,6 +36,11 @@ public class Flow {
     public Flow(String id) {
         this.id = id;
         this.flowState = FlowState.STOPPED;
+    }
+    public Flow(String id, String name, String description) {
+        this(id);
+        this.name = name;
+        this.description = description;
     }
 
     public Flow addNode(AbstractNode node) {

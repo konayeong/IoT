@@ -1,102 +1,103 @@
 package com.fbp.engine.api;
 
+import com.fbp.engine.api.response.FlowDeployResponse;
+import com.fbp.engine.api.response.FlowListResponse;
+import com.fbp.engine.core.Flow;
 import com.fbp.engine.engine.FlowManager;
+import com.fbp.engine.parser.FlowDefinition;
+import com.fbp.engine.parser.FlowParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import lombok.RequiredArgsConstructor;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 // /flows 엔드포인트 핸들러
 @RequiredArgsConstructor
 public class FlowHandler implements HttpHandler {
 
     private final FlowManager flowManager;
+    private final FlowParser flowParser;
+    private final MetricsHandler metricsHandler;
 
     @Override
-    public void handle(HttpExchange exchange)
-            throws IOException {
+    public void handle(HttpExchange exchange) throws IOException {
+        String method = exchange.getRequestMethod();
+        String path = exchange.getRequestURI().getPath();
+
+        // TODO-Q 이게 최선인가
+        if(method.equals("GET") && path.matches("/flows/[^/]+/metrics")) {
+            metricsHandler.handle(exchange);
+            return;
+        }
 
         switch (exchange.getRequestMethod()) {
-
             case "GET" -> getFlows(exchange);
-
             case "POST" -> createFlow(exchange);
-
             case "DELETE" -> deleteFlow(exchange);
-
-            default -> ApiResponse.send(exchange,
-                    405,
-                    """
-                    {"message":"Method Not Allowed"}
-                    """);
+            default -> ApiResponse.error(exchange, 405, "Method Not Allowed");
         }
     }
 
-    // 실행 중인 플로우 목록
+    /**
+     * GET /flows
+     * 실행 중인 플로우 목록
+     * 응답 : [{id, name, status}]
+     */
     private void getFlows(HttpExchange exchange) throws IOException {
+        List<FlowListResponse> flowList = new ArrayList<>();
 
-        String response = """
-                [
-                  {
-                    "id":"flow1",
-                    "status":"RUNNING"
-                  }
-                ]
-                """;
+        Map<String, Flow> runningFlow = flowManager.getRunningFlows();
+        for(Flow flow : runningFlow.values()) {
+            flowList.add(new FlowListResponse(flow.getId(), flow.getName(), flow.getFlowState().name()));
+        }
 
-        ApiResponse.send(exchange, 200, response);
+        ApiResponse.send(exchange, 200, flowList);
     }
 
+    /**
+     * POST /flows
+     * 새 플로우 배포
+     * 요청 본문 : 플로우 정의 JSON
+     * 응답 : {id, status} TODO flow status를 말하는건가?
+     */
     private void createFlow(HttpExchange exchange) throws IOException {
+        FlowDefinition definition = flowParser.parse(exchange.getRequestBody());
 
-        String response = """
-                {
-                  "id":"flow1",
-                  "status":"DEPLOYED"
-                }
-                """;
+        Flow flow = flowManager.deploy(definition);
 
-        ApiResponse.send(exchange, 201, response);
+        ApiResponse.send(exchange, 201, new FlowDeployResponse(flow.getId(), flow.getFlowState().name()));
     }
 
-    private void deleteFlow(HttpExchange exchange)
-            throws IOException {
+    /**
+     * DELETE /flows/{id}
+     * 플로우 중지 및 삭제
+     * 응답 : {message}
+     */
+    private void deleteFlow(HttpExchange exchange) throws IOException {
 
         String path = exchange.getRequestURI().getPath();
 
-        // /flows/flow1
         String[] parts = path.split("/");
 
         if (parts.length < 3) {
-
-            ApiResponse.send(exchange,
-                    400,
-                    """
-                    {"message":"Invalid Flow Id"}
-                    """);
-
+            ApiResponse.error(exchange, 400, "Invalid Flow ID");
             return;
         }
 
         String flowId = parts[2];
-//
-//        boolean removed = flowManager.remove(flowId);
-//
-//        if (!removed) {
-//
-//            ApiResponse.send(exchange,
-//                    404,
-//                    """
-//                    {"message":"Flow Not Found"}
-//                    """);
-//
-//            return;
-//        }
-//
-//        ApiResponse.send(exchange,
-//                200,
-//                """
-//                {"message":"Flow Deleted"}
-//                """);
+
+        boolean removed = flowManager.remove(flowId);
+
+        if (!removed) {
+            ApiResponse.error(exchange, 404, "Flow Not Found");
+            return;
+        }
+
+        ApiResponse.send(exchange, 200, Map.of("message", "Flow Deleted"));
     }
+
+
 }

@@ -25,10 +25,13 @@ public class FlowEngine {
     @Getter
     private Map<String, Flow> flows;
     private ExecutorService executor = Executors.newCachedThreadPool(); // new Thread()보다 효율적인 스레드 풀 관리
+    @Getter
+    private final long startedAt;
 
     public FlowEngine() {
         state = State.INITIALIZED;
         flows = new HashMap<>();
+        startedAt = System.currentTimeMillis();
     }
 
     public void register(Flow flow) {

@@ -6,6 +6,8 @@ import com.fbp.engine.core.port.OutputPort;
 import com.fbp.engine.core.port.DefaultInputPort;
 import com.fbp.engine.core.port.DefaultOutputPort;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.metrics.MetricsCollector;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,8 @@ public abstract class AbstractNode implements Node {
     private String id;
     private Map<String, InputPort> inputPorts = new HashMap<>();
     private Map<String, OutputPort> outputPorts = new HashMap<>();
+    @Setter
+    protected MetricsCollector metricsCollector;
 
     protected AbstractNode(String id) {
         this.id = id;
@@ -27,11 +31,20 @@ public abstract class AbstractNode implements Node {
 
     @Override
     public void process(Message message) {
-        System.out.println("[" + id + "] processing message..."); // 전처리
+        // Stage3
+        long start = System.currentTimeMillis();
+        log.debug("[{}] processing message..." , id);
 
-        onProcess(message); // 핵심 로직 (하위 클래스에 위임)
-
-        System.out.println("[" + id + "] processing complete."); // 후처리
+        try {
+            onProcess(message); // 핵심 로직 (하위 클래스에 위임)
+            metricsCollector.recordProcessing(id, System.currentTimeMillis() - start, true);
+            log.debug("[{}] processing complete..." , id);
+        }catch (Exception e) {
+            if(metricsCollector != null) {
+                metricsCollector.recordProcessing(id, System.currentTimeMillis()- start, false);
+            }
+            throw e;
+        }
     }
 
     @Override

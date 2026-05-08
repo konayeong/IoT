@@ -15,11 +15,11 @@ public class NodeRegistry {
     // 팩토리 등록
     public void register(String typeName, NodeFactory factory) {
         if(typeName == null || typeName.isBlank()) {
-            throw new NodeRegistryException("타입명을 입력해주세요 ?");
+            throw new NodeRegistryException("팩토리 등록 실패 : 타입명을 입력해주세요");
         }
 
         if(factory == null) {
-            throw new NodeRegistryException("Factory는 null일 수 없습니다.");
+            throw new NodeRegistryException("팩토리 등록 실패 : Factory는 null일 수 없습니다.");
         }
 
         NodeFactory nodeFactory = factoryMap.putIfAbsent(typeName, factory); // 등록
@@ -28,6 +28,7 @@ public class NodeRegistry {
         }
     }
 
+    // 노드 인스턴스 생성
     public Node create(String typeName, Map<String, Object> config) {
         if(typeName == null || typeName.isEmpty()) {
             throw new NodeRegistryException("타입명을 입력해주세요.");

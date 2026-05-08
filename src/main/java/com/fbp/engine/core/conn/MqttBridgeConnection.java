@@ -15,13 +15,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 // BlockingQueue 대신 MQTT를 사용해서 노드 간 메시지를 전달하는 Connection 구현체
 public class MqttBridgeConnection implements Connection{
     private final MqttClient client; // pub, sub 하나로 공유
-    private final BlockingQueue<Message> internalQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Message> internalQueue;
     private final String topic;
     private final MessageSerializer serializer;
     private final int qos = 1;
 
     public MqttBridgeConnection(MqttClient client, String topic, MessageSerializer serializer) {
         this.client = client;
+        this.internalQueue = new LinkedBlockingQueue<>();
         this.topic = topic;
         this.serializer = serializer;
 

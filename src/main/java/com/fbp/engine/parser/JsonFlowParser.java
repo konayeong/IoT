@@ -15,6 +15,7 @@ public class JsonFlowParser implements FlowParser {
     @Override
     public FlowDefinition parse(InputStream inputStream) {
         try {
+            // JsonNode : JSON 데이터를 트리 형태로 표현, 키-값 구조 -> 부모-자식 노드로 매핑
             JsonNode root = objectMapper.readTree(inputStream);
 
             String id = getRequiredText(root, "id");
@@ -30,7 +31,7 @@ public class JsonFlowParser implements FlowParser {
         } catch (FlowParserException e) {
             throw e;
         } catch (Exception e) {
-            throw new FlowParserException("Failed to parse JSON", e);
+            throw new FlowParserException("JSON 파싱 실패", e);
         }
     }
 
