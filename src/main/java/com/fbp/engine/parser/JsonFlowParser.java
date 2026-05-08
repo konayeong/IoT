@@ -3,6 +3,11 @@ package com.fbp.engine.parser;
 import java.io.InputStream;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fbp.engine.parser.definition.ConnectionDefinition;
+import com.fbp.engine.parser.definition.FlowDefinition;
+import com.fbp.engine.parser.definition.NodeDefinition;
+import com.fbp.engine.parser.definition.TransportDefinition;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

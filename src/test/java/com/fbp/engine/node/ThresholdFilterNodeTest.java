@@ -55,10 +55,4 @@ class ThresholdFilterNodeTest {
     void not_exists_key() {
         assertDoesNotThrow(() -> node.onProcess(new Message(Map.of())));
     }
-
-    @Test
-    @DisplayName("양쪽 동시 검증")
-    void two_verify() {
-       // TODO ?
-    }
 }

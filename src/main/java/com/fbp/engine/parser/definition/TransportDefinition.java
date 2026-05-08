@@ -1,4 +1,4 @@
-package com.fbp.engine.parser;
+package com.fbp.engine.parser.definition;
 
 import lombok.Getter;
 

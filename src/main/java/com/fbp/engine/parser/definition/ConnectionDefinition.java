@@ -1,5 +1,6 @@
-package com.fbp.engine.parser;
+package com.fbp.engine.parser.definition;
 
+import com.fbp.engine.parser.FlowParserException;
 import lombok.Getter;
 
 // 연결 정의 (from node:port, to node:port)

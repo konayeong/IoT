@@ -24,6 +24,10 @@ public class RuleNode extends AbstractNode {
         // TODO-R
         RuleExpression expression = RuleExpression.parse(condition);
         this.condition = expression::evaluate;
+
+        addInputPort("in");
+        addOutputPort("match");
+        addOutputPort("mismatch");
     }
 
     @Override

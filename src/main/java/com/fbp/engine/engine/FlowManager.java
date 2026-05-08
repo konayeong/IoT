@@ -4,9 +4,9 @@ import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.node.AbstractNode;
-import com.fbp.engine.parser.ConnectionDefinition;
-import com.fbp.engine.parser.FlowDefinition;
-import com.fbp.engine.parser.NodeDefinition;
+import com.fbp.engine.parser.definition.ConnectionDefinition;
+import com.fbp.engine.parser.definition.FlowDefinition;
+import com.fbp.engine.parser.definition.NodeDefinition;
 import com.fbp.engine.registry.NodeRegistry;
 import lombok.RequiredArgsConstructor;
 

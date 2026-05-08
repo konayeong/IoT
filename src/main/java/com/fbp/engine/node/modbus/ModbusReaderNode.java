@@ -46,7 +46,6 @@ public class ModbusReaderNode extends ProtocolNode {
         int startAddress = (int) getConfig("startAddress");
         int count = (int) getConfig("count");
 
-        // TODO : 설계 가이드 참고해서 확장
         Map<String, Object> mapping = (Map<String, Object>) getConfig("registerMapping");
 
         try {

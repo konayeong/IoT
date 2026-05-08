@@ -68,7 +68,7 @@ public class Flow {
         // connect 생성
         String connId = String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort);
 
-        // 3+ (BridgeConnectionFactory)
+        // TODO 3+ (BridgeConnectionFactory)
 
         LocalConnection connection = new LocalConnection(connId);
         connection.setTarget(targetNodePort);
