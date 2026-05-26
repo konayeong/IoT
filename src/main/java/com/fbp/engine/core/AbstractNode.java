@@ -6,7 +6,6 @@ import java.util.Map;
 
 public abstract class AbstractNode implements Node {
     private final String id;
-
     private Map<String, InputPort> inputPorts = new HashMap<>();
     private Map<String, OutputPort> outputPorts = new HashMap<>();
 
@@ -25,14 +24,11 @@ public abstract class AbstractNode implements Node {
         onProcess(message);
     }
 
+    @Override
+    public void initialize() {}
 
     @Override
-    public void initialize() {
-    }
-
-    @Override
-    public void shutdown() {
-    }
+    public void shutdown() {}
 
     protected void addInputPort(String name) {
         inputPorts.put(name, new DefaultInputPort(name, this));
@@ -52,10 +48,9 @@ public abstract class AbstractNode implements Node {
 
     protected void send(String portName, Message message) {
         OutputPort outputPort = outputPorts.get(portName);
-        if(outputPort == null) {
-            throw new IllegalArgumentException("OutputPort not found: " + portName);
+        if (outputPort != null) {
+            outputPort.send(message);
         }
-        outputPort.send(message);
     }
 
     protected abstract void onProcess(Message message);

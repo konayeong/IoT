@@ -26,11 +26,8 @@ public class Connection {
         try {
             buffer.put(message);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
-        }
-
-        if(target != null) {
-            target.receive(message);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.fbp.engine.message;
 
 import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +13,7 @@ public class Message {
 
     // 생성자 : ID 자동 생성, 페이로드 불변 복사, 타임스탬프 자동 기록
     public Message(Map<String, Object> payload) {
-        this.id = String.valueOf(UUID.randomUUID());
+        this.id = UUID.randomUUID().toString();
         this.payload = Map.copyOf(payload); // 불변 복사
         this.timestamp = System.currentTimeMillis();
     }
@@ -26,7 +25,7 @@ public class Message {
 
     @Override
     public String toString() {
-        return payload.toString();
+        return "Message{id=" + id + ", timestamp=" + timestamp + ", payload=" + payload + "}";
     }
 
     // 기존 페이로드에 항목을 추가한 새 Message 반환 (원본 불변)
@@ -42,7 +41,7 @@ public class Message {
 
     // 특정 키를 제거한 새 Message 반환
     public Message withoutKey(String key) {
-        Map<String, Object> withoutKeyPayload = new HashMap<>(payload);
+        Map<String, Object> withoutKeyPayload = new HashMap<>(this.payload);
         withoutKeyPayload.remove(key);
         return new Message(withoutKeyPayload);
     }

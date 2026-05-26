@@ -1,6 +1,7 @@
 package com.fbp.engine.core;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,11 +26,11 @@ public class Flow {
     private final String id;
     private final Map<String, AbstractNode> nodes = new HashMap<>();
     private final List<Connection> connections = new ArrayList<>();
-    private FlowState flowState;
+    @Setter
+    private FlowState flowState =  FlowState.STOPPED;
 
     public Flow(String id) {
         this.id = id;
-        this.flowState = FlowState.STOPPED;
     }
 
     public Flow addNode(AbstractNode node) {
@@ -38,25 +39,31 @@ public class Flow {
     }
 
     public Flow connect(String sourceNodeId, String sourcePort, String targetNodeId, String targetPort) {
-        String connId = String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort);
-
         AbstractNode sourceNode = nodes.get(sourceNodeId);
         AbstractNode targetNode = nodes.get(targetNodeId);
 
-        if (sourceNode == null || targetNode == null) {
-            throw new IllegalArgumentException("노드가 존재하지 않습니다.");
+        if (sourceNode == null) {
+            throw new IllegalArgumentException("Source node not found: " + sourceNodeId);
+        }
+        if (targetNode == null) {
+            throw new IllegalArgumentException("Target node not found: " + targetNodeId);
         }
 
-        OutputPort sourcePortObj = sourceNode.getOutputPort(sourcePort);
-        InputPort targetPortObj = targetNode.getInputPort(targetPort);
+        OutputPort out = sourceNode.getOutputPort(sourcePort);
+        InputPort in = targetNode.getInputPort(targetPort);
 
-        if (sourcePortObj == null || targetPortObj == null) {
-            throw new IllegalArgumentException("포트가 존재하지 않습니다.");
+        if (out == null) {
+            throw new IllegalArgumentException("Source port not found: " + sourcePort);
+        }
+        if (in == null) {
+            throw new IllegalArgumentException("Target port not found: " + targetPort);
         }
 
+        String connId = sourceNodeId + ":" + sourcePort + "->" + targetNodeId + ":" + targetPort;
         Connection connection = new Connection(connId);
-        connection.setTarget(targetPortObj);
-        sourcePortObj.connect(connection);
+        connection.setTarget(in);
+
+        out.connect(connection);
 
         connections.add(connection);
 
@@ -82,22 +89,7 @@ public class Flow {
 
         if(nodes.isEmpty()) { // 노드가 0개면 에러
             errors.add("등록된 노드가 없습니다.");
-        }
-
-        for(Connection conn : connections) {
-            String id = conn.getId();
-
-            String[] parts = id.split("->");
-            String sourceNodeId = parts[0].split(":")[0];
-            String targetNodeId = parts[1].split(":")[0];
-
-            if (!nodes.containsKey(sourceNodeId)) {
-                errors.add("존재하지 않는 source 노드: " + sourceNodeId);
-            }
-
-            if (!nodes.containsKey(targetNodeId)) {
-                errors.add("존재하지 않는 target 노드: " + targetNodeId);
-            }
+            return errors;
         }
 
         // 순환 참조 탐지
@@ -139,9 +131,7 @@ public class Flow {
         return false;
     }
 
-    private boolean dfs(String node,
-                        Map<String, List<String>> graph,
-                        Map<String, State> state) {
+    private boolean dfs(String node, Map<String, List<String>> graph, Map<String, State> state) {
 
         state.put(node, State.VISITING);
 
