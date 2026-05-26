@@ -1,0 +1,20 @@
+package com.fbp.engine.node;
+
+import com.fbp.engine.message.Message;
+
+import java.util.Map;
+
+public class GeneratorNode extends AbstractNode {
+    public GeneratorNode(String id) {
+        super(id);
+        addOutputPort(id);
+    }
+
+    @Override
+    protected void onProcess(Message message) {
+    }
+
+    public void generate(String key, Object value) {
+        send("out", new Message(Map.of(key, value)));
+    }
+}
