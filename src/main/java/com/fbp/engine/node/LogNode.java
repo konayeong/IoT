@@ -1,11 +1,12 @@
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class LogNode extends AbstractNode{
+public class LogNode extends AbstractNode {
     private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
     public LogNode(String id) {

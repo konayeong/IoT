@@ -1,6 +1,5 @@
-package com.fbp.engine.node;
+package com.fbp.engine.core;
 
-import com.fbp.engine.core.*;
 import com.fbp.engine.message.Message;
 import java.util.HashMap;
 import java.util.Map;

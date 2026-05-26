@@ -1,5 +1,6 @@
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

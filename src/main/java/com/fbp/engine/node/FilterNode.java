@@ -2,7 +2,6 @@ package com.fbp.engine.node;
 
 import com.fbp.engine.core.*;
 import com.fbp.engine.message.Message;
-import lombok.Getter;
 
 public class FilterNode extends AbstractNode {
     private final String key;
