@@ -78,7 +78,7 @@ class Step10FinalTest {
         @DisplayName("alert 경로 정확성")
         void alert_message() {
             CollectorNode cn = (CollectorNode) flow.getNodes().get("alertNode");
-            for(Message msg : cn.getCollected()) {
+            for(Message msg : cn.getCollects()) {
                 assertTrue((Double) msg.getPayload().get("temperature") > 30);
             }
         }
@@ -87,7 +87,7 @@ class Step10FinalTest {
         @DisplayName("normal 경로 정확성")
         void normal_message() {
             CollectorNode cn = (CollectorNode) flow.getNodes().get("logCollector");
-            for(Message msg : cn.getCollected()) {
+            for(Message msg : cn.getCollects()) {
                 assertTrue((Double) msg.getPayload().get("temperature") <= 30);
             }
         }
@@ -98,7 +98,7 @@ class Step10FinalTest {
             CollectorNode alert = (CollectorNode) flow.getNodes().get("alertNode");
             CollectorNode log = (CollectorNode) flow.getNodes().get("logCollector");
 
-            int total = alert.getCollected().size() + log.getCollected().size();
+            int total = alert.getCollects().size() + log.getCollects().size();
 
             TimerNode tn = (TimerNode) flow.getNodes().get("timer");
             assertEquals(tn.getTickCount(), total);
@@ -110,7 +110,7 @@ class Step10FinalTest {
             List<String> lines = Files.readAllLines(Path.of(PATH));
 
             CollectorNode cn = (CollectorNode) flow.getNodes().get("logCollector");
-            int collect = cn.getCollected().size();
+            int collect = cn.getCollects().size();
             int file = lines.size();
 
             assertEquals(collect, file);
@@ -122,7 +122,7 @@ class Step10FinalTest {
             CollectorNode alert = (CollectorNode) flow.getNodes().get("alertNode");
             CollectorNode log = (CollectorNode) flow.getNodes().get("logCollector");
 
-            for(Message msg : alert.getCollected()) {
+            for(Message msg : alert.getCollects()) {
                 assertAll(
                         () -> assertTrue(msg.getPayload().containsKey("sensorId")),
                         () -> assertTrue(msg.getPayload().containsKey("temperature")),
@@ -130,7 +130,7 @@ class Step10FinalTest {
                 );
             }
 
-            for(Message msg : log.getCollected()) {
+            for(Message msg : log.getCollects()) {
                 assertAll(
                         () -> assertTrue(msg.getPayload().containsKey("sensorId")),
                         () -> assertTrue(msg.getPayload().containsKey("temperature")),
@@ -145,12 +145,12 @@ class Step10FinalTest {
             CollectorNode alert = (CollectorNode) flow.getNodes().get("alertNode");
             CollectorNode log = (CollectorNode) flow.getNodes().get("logCollector");
 
-            for(Message msg : alert.getCollected()) {
+            for(Message msg : alert.getCollects()) {
                 assertTrue((double) msg.getPayload().get("temperature") >= 15.0);
                 assertTrue((double) msg.getPayload().get("temperature") <= 45.0);
             }
 
-            for(Message msg : log.getCollected()) {
+            for(Message msg : log.getCollects()) {
                 assertTrue((double) msg.getPayload().get("temperature") >= 15.0);
                 assertTrue((double) msg.getPayload().get("temperature") <= 45.0);
             }

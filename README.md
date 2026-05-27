@@ -70,3 +70,35 @@ FBP Flow                                 MQTT Broker
                   │  "in" InputPort    │──(MQTT Publish)──→ topic: alert/temp
                   └────────────────────┘
 ```
+
+# Step3
+## MODBUS
+> 마스터-슬레이브 구조 (슬레이브는 먼저 데이터를 보내지 않는다)
+### MODBUS TCP 프레임 구조
+- MBAP Header (7byte)
+    - MODBUS TCP 고유의 헤더
+    - 모든 요청과 응답에 포함
+
+        ``` 
+        바이트 위치:  [0][1]     [2][3]    [4][5]          [6]
+                   ──────     ──────    ──────          ───
+        의미:       트랜잭션 ID  프로토콜 ID  길이(이후 바이트수) 유닛 ID
+                   (2byte)    (2byte)   (2byte)         (1byte)
+        ```
+
+      | **필드** | **크기** | **설명**                             |
+                    | --- | --- |------------------------------------|
+      | Transaction ID | 2 바이트 | 요청/응답 쌍을 식별. 요청에서 보낸 값이 응답에 그대로 돌아옴 |
+      | Protocol ID | 2 바이트 | 항상`0x0000`(MODBUS 프로토콜)            |
+      | Length | 2 바이트 | 이 필드 이후의 바이트 수 (Unit ID + PDU 길이)  |
+      | Unit ID | 1 바이트 | 슬레이브 ID. TCP에서는 보통 `0x01`또는`0xFF`  |
+
+- PDU (5 byte)
+
+  ![modbus-tcp](./docs/modbus-tcp-frame.png)
+
+### Modbus TCP 응답
+1. 정상 응답 : FC = 0x03
+2. 에러 응답 : FC = 0x83 = 원래 FC + 0x80 = MSB(최상위 비트)가 1로 바뀜
+- 검증 방법
+  - (fc & 0x80)이 1이면 Exception Response

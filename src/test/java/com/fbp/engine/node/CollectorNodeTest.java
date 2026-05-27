@@ -23,8 +23,8 @@ class CollectorNodeTest {
     @DisplayName("메시지 수집")
     void message_collector() {
         node.onProcess(new Message(Map.of("key", "value")));
-        assertEquals(1, node.getCollected().size());
-        assertEquals("value", node.getCollected().get(0).getPayload().get("key"));
+        assertEquals(1, node.getCollects().size());
+        assertEquals("value", node.getCollects().get(0).getPayload().get("key"));
     }
 
     @Test
@@ -34,7 +34,7 @@ class CollectorNodeTest {
         node.onProcess(new Message(Map.of("Two", 2)));
         node.onProcess(new Message(Map.of("Three", 3)));
 
-        List<Message> collected = node.getCollected();
+        List<Message> collected = node.getCollects();
         assertAll(
                 () -> assertEquals(1, (Integer) collected.get(0).get("One")),
                 () -> assertEquals(2, (Integer) collected.get(1).get("Two")),
@@ -45,7 +45,7 @@ class CollectorNodeTest {
     @Test
     @DisplayName("초기 상태 빈 리스트")
     void init() {
-        assertTrue(node.getCollected().isEmpty());
+        assertTrue(node.getCollects().isEmpty());
     }
 
     @Test
@@ -79,6 +79,6 @@ class CollectorNodeTest {
 
         engine.shutdown();
 
-        assertEquals(3, collector.getCollected().size());
+        assertEquals(3, collector.getCollects().size());
     }
 }
