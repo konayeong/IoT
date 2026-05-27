@@ -26,7 +26,7 @@ class ProtocolNodeTest {
         }
 
         @Override
-        protected void disconnect() throws IOException {
+        protected void disconnect() throws Exception {
         }
 
         @Override

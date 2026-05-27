@@ -11,8 +11,6 @@ public class PrintNode extends AbstractNode {
 
     @Override
     protected void onProcess(Message message) {
-        System.out.println(
-                "[" + getId() + "] " + message
-        );
+        System.out.println("[" + getId() + "] " + message);
     }
 }
