@@ -37,7 +37,7 @@ public class EchoProtocolNode extends ProtocolNode {
 
     @Override
     protected void onProcess(Message message) {
-
+        // non
     }
 
     public void sendTestMessage(String msg) {

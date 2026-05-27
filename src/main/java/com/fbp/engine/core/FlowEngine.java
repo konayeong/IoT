@@ -1,5 +1,6 @@
 package com.fbp.engine.core;
 
+import com.fbp.engine.core.conn.Connection;
 import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
 import lombok.Getter;
@@ -51,12 +52,19 @@ public class FlowEngine {
 
         flow.initialize();
 
-        for(LocalConnection conn : flow.getConnections()) {
+        for (Connection conn : flow.getConnections()) {
             executor.submit(() -> {
-                while(flow.getFlowState() == Flow.FlowState.RUNNING) {
-                    Message msg = conn.poll();
-                    if(msg != null) {
-                        conn.getTarget().receive(msg);
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        Message msg = conn.poll();
+
+                        if (conn.getTarget() != null) {
+                            conn.getTarget().receive(msg);
+                        }
+
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
             });

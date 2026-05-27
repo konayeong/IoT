@@ -22,7 +22,7 @@ class GeneratorNodeTest {
 
     @Test
     @DisplayName("generate 메시지 생성")
-    void create_message() {
+    void create_message() throws InterruptedException {
         node.generate("key", "value");
 
         assertNotNull(conn.poll());
@@ -30,7 +30,7 @@ class GeneratorNodeTest {
 
     @Test
     @DisplayName("메시지 내용 확인")
-    void message_check() {
+    void message_check() throws InterruptedException {
         node.generate("key", "value");
         Message msg = conn.poll();
         assertTrue(msg.getPayload().containsKey("key"));
@@ -45,7 +45,7 @@ class GeneratorNodeTest {
 
     @Test
     @DisplayName("다수 generate 호출")
-    void multi_generate() {
+    void multi_generate() throws InterruptedException {
         node.generate("A", "a");
         node.generate("B", "b");
         node.generate("C", "c");

@@ -7,6 +7,6 @@ import com.fbp.engine.registry.NodeFactory;
 public record NodeDescriptor (
         String typeName,
         String description,
-        Class<? extends Node> nodeClass, // TODO-Q
+        Class<? extends Node> nodeClass,
         NodeFactory factory
 ){}

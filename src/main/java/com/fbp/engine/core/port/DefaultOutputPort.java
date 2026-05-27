@@ -1,5 +1,6 @@
 package com.fbp.engine.core.port;
 
+import com.fbp.engine.core.conn.Connection;
 import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.message.Message;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class DefaultOutputPort implements OutputPort {
     private final String name;
-    private final List<LocalConnection> connectionList = new ArrayList<>(); // 1:N 전송
+    private final List<Connection> connectionList = new ArrayList<>(); // 1:N 전송
 
     public DefaultOutputPort(String name) {
         this.name = name;
@@ -20,13 +21,13 @@ public class DefaultOutputPort implements OutputPort {
     }
 
     @Override
-    public void connect(LocalConnection connection) {
+    public void connect(Connection connection) {
         connectionList.add(connection);
     }
 
     @Override
     public void send(Message message) {
-        for(LocalConnection conn : connectionList) {
+        for(Connection conn : connectionList) {
             conn.deliver(message);
         }
     }

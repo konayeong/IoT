@@ -31,7 +31,7 @@ public class JsonFlowParser implements FlowParser {
             List<NodeDefinition> nodes = parseNodes(root.get("nodes"));
             List<ConnectionDefinition> connections = parseConnections(root.get("connections"));
 
-            return new FlowDefinition(id, name, transport, description, nodes, connections);
+            return new FlowDefinition(id, name, description, transport, nodes, connections);
 
         } catch (FlowParserException e) {
             throw e;
@@ -41,13 +41,14 @@ public class JsonFlowParser implements FlowParser {
     }
 
     private TransportDefinition parseTransport(JsonNode transportNode) {
-        if(transportNode == null) {
-            return null; // TODO-R
-        }
+        // TODO Local ?
+        TransportType type = TransportType.valueOf(getRequiredText(transportNode, "type").toUpperCase());
+        String broker = null;
 
-        String type = getRequiredText(transportNode, "type");
-        String broker = getRequiredText(transportNode, "broker");
-        int qos = Integer.parseInt(getRequiredText(transportNode, "qos"));
+        if (type == TransportType.MQTT) {
+            broker = getRequiredText(transportNode, "broker");
+        }
+        int qos = transportNode.has("qos") ? transportNode.get("qos").asInt() : 1;
 
         return new TransportDefinition(type, broker, qos);
     }
@@ -63,10 +64,7 @@ public class JsonFlowParser implements FlowParser {
             String id = getRequiredText(node, "id");
             String type = getRequiredText(node, "type");
 
-            Map<String, Object> config = objectMapper.convertValue(
-                    node.get("config"),
-                    Map.class
-            );
+            Map<String, Object> config = objectMapper.convertValue(node.get("config"), Map.class);
 
             nodes.add(new NodeDefinition(id, type, config));
         }
@@ -91,7 +89,12 @@ public class JsonFlowParser implements FlowParser {
             String from = getRequiredText(conn, "from");
             String to = getRequiredText(conn, "to");
 
-            connections.add(new ConnectionDefinition(from, to));
+            String[] fromParts = splitConnection(from);
+            String[] toParts = splitConnection(to);
+
+            connections.add(
+                    new ConnectionDefinition(fromParts[0], fromParts[1], toParts[0], toParts[1])
+            );
         }
 
         return connections;
@@ -108,5 +111,18 @@ public class JsonFlowParser implements FlowParser {
     private String getOptionalText(JsonNode node, String field) {
         JsonNode value = node.get(field);
         return value == null ? null : value.asText();
+    }
+
+    private String[] splitConnection(String value) {
+        if (value == null || !value.contains(":")) {
+            throw new FlowParserException("Invalid connection format: " + value);
+        }
+
+        String[] parts = value.split(":");
+        if (parts.length != 2) {
+            throw new FlowParserException("Invalid connection format: " + value);
+        }
+
+        return parts;
     }
 }

@@ -1,9 +1,9 @@
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.port.DefaultInputPort;
 import com.fbp.engine.core.port.InputPort;
 import com.fbp.engine.core.Node;
 import com.fbp.engine.core.port.OutputPort;
-import com.fbp.engine.core.port.DefaultInputPort;
 import com.fbp.engine.core.port.DefaultOutputPort;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.metrics.MetricsCollector;
@@ -37,7 +37,13 @@ public abstract class AbstractNode implements Node {
 
         try {
             onProcess(message); // 핵심 로직 (하위 클래스에 위임)
-            metricsCollector.recordProcessing(id, System.currentTimeMillis() - start, true);
+            if (metricsCollector != null) {
+                metricsCollector.recordProcessing(
+                        id,
+                        System.currentTimeMillis() - start,
+                        true
+                );
+            }
             log.debug("[{}] processing complete..." , id);
         }catch (Exception e) {
             if(metricsCollector != null) {

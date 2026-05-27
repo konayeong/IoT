@@ -25,7 +25,7 @@ class FilterNodeTest {
     }
     @Test
     @DisplayName("조건 만족 시 send 호출")
-    void process_success() {
+    void process_success() throws InterruptedException {
         // threshold 이상인 값을 가진 메시지가 OutputPort로 전달됨
         Message message = new Message(Map.of("temperature", 20.5));
         node.process(message);
@@ -47,7 +47,7 @@ class FilterNodeTest {
 
     @Test
     @DisplayName("경계값 처리")
-    void process_equals() {
+    void process_equals() throws InterruptedException {
         // threshold와 정확히 같은 값의 동작 확인 (이상 조건이므로 통과)
         Message message = new Message(Map.of("temperature", 20));
         node.process(message);

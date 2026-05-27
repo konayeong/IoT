@@ -35,7 +35,7 @@ class DelayNodeTest {
 
     @Test
     @DisplayName("메시지 내용 보존")
-    void message_remain() {
+    void message_remain() throws InterruptedException {
         Message message = new Message(Map.of("key", "value"));
         delayNode.onProcess(message);
         assertEquals(message, connection.poll());

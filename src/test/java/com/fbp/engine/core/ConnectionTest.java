@@ -23,7 +23,7 @@ class ConnectionTest {
 
     @Test
     @DisplayName("deliver-poll 기본 동작")
-    void deliver_poll() {
+    void deliver_poll() throws InterruptedException {
         connection.deliver(message);
         Message pollMsg = connection.poll();
 
@@ -32,7 +32,7 @@ class ConnectionTest {
 
     @Test
     @DisplayName("메시지 순서 보장")
-    void message_fifo() {
+    void message_fifo() throws InterruptedException {
         Message message2 = new Message(Map.of("test2", "value"));
         Message message3 = new Message(Map.of("test3", 0));
 
@@ -51,7 +51,12 @@ class ConnectionTest {
         CountDownLatch latch = new CountDownLatch(1);
 
         new Thread(() -> {
-            Message msg = connection.poll();
+            Message msg = null;
+            try {
+                msg = connection.poll();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             assertEquals(25.0, msg.get("temperature"));
             latch.countDown();
         }).start();
@@ -69,7 +74,12 @@ class ConnectionTest {
         CountDownLatch latch = new CountDownLatch(1);
         // 소비자 시작
         new Thread(() -> {
-            Message msg = connection.poll(); //  대기
+            Message msg = null; //  대기
+            try {
+                msg = connection.poll();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             assertEquals(25.0, msg.get("temperature"));
             latch.countDown();
         }).start();
@@ -94,7 +104,9 @@ class ConnectionTest {
                 conn.deliver(new Message(Map.of("test3", 3))); // 블로킹
 
                 latch.countDown(); // 실행되면 안됨
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                // ignore
+            }
         });
 
         producer.start();

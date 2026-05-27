@@ -16,14 +16,14 @@ public class PluginManager {
     }
 
     public void loadPlugins() {
-        // ClassPath 기반 로딩
+        // ClassPath 내 ServiceLoader<NodeProvider> 스캔
         ServiceLoader<NodeProvider> pathLoader = ServiceLoader.load(NodeProvider.class);
 
         for(NodeProvider provider : pathLoader) {
             registerProvider(provider);
         }
 
-        // plugins 디렉토리 로딩
+        // plugins/ 디렉토리의 JAR 파일 스캔
         PluginScanner scanner = new PluginScanner();
         List<File> jars = scanner.scan("plugins");
 

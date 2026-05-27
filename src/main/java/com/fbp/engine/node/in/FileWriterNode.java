@@ -2,7 +2,6 @@ package com.fbp.engine.node.in;
 
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.AbstractNode;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;

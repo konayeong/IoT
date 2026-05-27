@@ -1,5 +1,6 @@
 package com.fbp.engine.core;
 
+import com.fbp.engine.core.conn.Connection;
 import com.fbp.engine.core.conn.LocalConnection;
 import com.fbp.engine.core.port.InputPort;
 import com.fbp.engine.core.port.OutputPort;
@@ -30,7 +31,7 @@ public class Flow {
     private String description;
 
     private final Map<String, AbstractNode> nodes = new HashMap<>(); // 등록된 노드
-    private final List<LocalConnection> connections = new ArrayList<>(); // 생성된 연결
+    private final List<Connection> connections = new ArrayList<>(); // 생성된 연결
     private FlowState flowState;
 
     public Flow(String id) {
@@ -48,37 +49,34 @@ public class Flow {
         return this; // 메서드 체이닝 지원
     }
 
-    // 연결 생성 - "소스노드ID:포트이름" -> "대상노드ID:포트이름"
-    public Flow connect(String sourceNodeId, String sourcePort, String targetNodeId, String targetPort) {
-        // 노드 존재 확인
-        AbstractNode sourceNode = nodes.get(sourceNodeId);
-        AbstractNode targetNode = nodes.get(targetNodeId);
+    // Stage2 : 연결 생성 - "소스노드ID:포트이름" -> "대상노드ID:포트이름"
+    public Flow connect(String fromNode, String fromPort, String toNode, String toPort) {
+        String connId = String.format("%s:%s->%s:%s", fromNode, fromPort, toNode, toPort);
 
-        if(sourceNode == null || targetNode == null) {
+        return connect(fromNode, fromPort, toNode, toPort, new LocalConnection(connId));
+    }
+
+    public Flow connect(String fromNode, String fromPort, String toNode, String toPort, Connection connection) {
+        AbstractNode sourceNode = nodes.get(fromNode);
+        AbstractNode targetNode = nodes.get(toNode);
+
+        if (sourceNode == null || targetNode == null) {
             throw new IllegalArgumentException("노드가 존재하지 않습니다.");
         }
 
-        // 포트 존재 확인
-        OutputPort sourceNodePort = sourceNode.getOutputPort(sourcePort);
-        InputPort targetNodePort = targetNode.getInputPort(targetPort);
+        OutputPort sourcePortObj = sourceNode.getOutputPort(fromPort);
+        InputPort targetPortObj = targetNode.getInputPort(toPort);
 
-        if(sourceNodePort == null || targetNodePort == null) {
+        if (sourcePortObj == null || targetPortObj == null) {
             throw new IllegalArgumentException("포트가 존재하지 않습니다.");
         }
-        // connect 생성
-        String connId = String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort);
 
-        // TODO 3+ (BridgeConnectionFactory)
-
-        LocalConnection connection = new LocalConnection(connId);
-        connection.setTarget(targetNodePort);
-        sourceNodePort.connect(connection);
+        sourcePortObj.connect(connection);
 
         connections.add(connection);
 
         return this;
     }
-
     public void initialize() {
         for(AbstractNode node : nodes.values()) {
             node.initialize();
@@ -101,7 +99,7 @@ public class Flow {
         }
 
         // connect
-        for(LocalConnection conn : connections) {
+        for(Connection conn : connections) {
             String id = conn.getId();
 
             String[] parts = id.split("->");
@@ -131,7 +129,7 @@ public class Flow {
             graph.put(id, new ArrayList<>());
         }
 
-        for (LocalConnection conn : connections) {
+        for (Connection conn : connections) {
             String[] parts = conn.getId().split("->");
             String source = parts[0].split(":")[0];
             String target = parts[1].split(":")[0];

@@ -17,11 +17,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 // 통합 테스트
-public class AppTest {
+class AppTest {
 
     private FlowEngine engine;
     private Flow flow;
-    private String PATH = "final-test.txt";
+    private static final String PATH = "final-test.txt";
 
     @BeforeEach
     void setUp() {

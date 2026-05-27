@@ -75,7 +75,8 @@ class CollectorNodeTest {
         generator.generate("key2", "value2");
         generator.generate("key3", "value3");
 
-        Thread.sleep(5000);
+
+        Thread.sleep(200);
 
         engine.shutdown();
 

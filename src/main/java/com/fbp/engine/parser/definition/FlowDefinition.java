@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.fbp.engine.parser.TransportType.MQTT;
+
 // 플로우 정의 데이터 객체 (노드 목록, 연결 목록) - 검증
 @Getter
 public class FlowDefinition {
@@ -17,7 +19,7 @@ public class FlowDefinition {
     private final List<NodeDefinition> nodes;
     private final List<ConnectionDefinition> connections;
 
-    public FlowDefinition(String id, String name, TransportDefinition transport, String description, List<NodeDefinition> nodes, List<ConnectionDefinition> connections) {
+    public FlowDefinition(String id, String name, String description, TransportDefinition transport, List<NodeDefinition> nodes, List<ConnectionDefinition> connections) {
         if(id == null || id.isBlank()) {
             throw new FlowParserException("Flow ID 필수 입력");
         }
@@ -40,19 +42,23 @@ public class FlowDefinition {
         // 노드 ID 중복 확인
         Set<String> nodeIds = new HashSet<>();
         for (NodeDefinition node : nodes) {
-            if (!nodeIds.add(node.getId())) {
-                throw new FlowParserException("노드 ID 중복: " + node.getId());
+            if (!nodeIds.add(node.id())) {
+                throw new FlowParserException("노드 ID 중복: " + node.id());
             }
         }
 
         // 실행 가능한 그래프인지(연결) 미리 보장
         for (ConnectionDefinition conn : connections) {
-            if (!nodeIds.contains(conn.getFromNode())) {
-                throw new FlowParserException("Unknown source node: " + conn.getFromNode());
+            if (!nodeIds.contains(conn.fromNode())) {
+                throw new FlowParserException("Unknown source node: " + conn.fromNode());
             }
-            if (!nodeIds.contains(conn.getToNode())) {
-                throw new FlowParserException("Unknown target node: " + conn.getToNode());
+            if (!nodeIds.contains(conn.toNode())) {
+                throw new FlowParserException("Unknown target node: " + conn.toNode());
             }
+        }
+
+        if (transport != null && transport.type() == MQTT && transport.brokerUri() == null) {
+            throw new IllegalArgumentException("MQTT brokerUri required");
         }
     }
 }

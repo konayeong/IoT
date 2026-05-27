@@ -25,7 +25,7 @@ class HumiditySensorNodeTest {
 
     @Test
     @DisplayName("습도 범위 확인")
-    void humidity_range() {
+    void humidity_range() throws InterruptedException {
         for(int i=0; i<10; i++) {
             sensorNode.onProcess(new Message(Map.of()));
             double humidity = conn.poll().get("humidity");
@@ -35,7 +35,7 @@ class HumiditySensorNodeTest {
 
     @Test
     @DisplayName("필수 키 포함")
-    void contains_primary_key() {
+    void contains_primary_key() throws InterruptedException {
         sensorNode.onProcess(new Message(Map.of()));
         Message msg = conn.poll();
 
@@ -48,7 +48,7 @@ class HumiditySensorNodeTest {
 
     @Test
     @DisplayName("sensorId 일치")
-    void sensorId_equals() {
+    void sensorId_equals() throws InterruptedException {
         sensorNode.onProcess(new Message(Map.of()));
         Message msg = conn.poll();
         assertEquals(sensorNode.getId(), msg.getPayload().get("sensorId"));

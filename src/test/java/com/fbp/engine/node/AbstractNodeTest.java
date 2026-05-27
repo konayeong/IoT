@@ -67,7 +67,7 @@ class AbstractNodeTest {
 
     @Test
     @DisplayName("send로 메시지 전달")
-    void send() {
+    void send() throws InterruptedException {
         TestNode receiver = new TestNode("receiver");
 
         testNode.addOutputPort("out");

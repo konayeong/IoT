@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-// TODO-R
 // ServerSocket으로 연결을 받고, 요청 프레임을 파싱하여 레지스터 값을 돌려주는 프로그램
 public class ModbusTcpSimulator {
 
@@ -107,7 +106,6 @@ public class ModbusTcpSimulator {
                 }
             }
         } catch (IOException e) {
-            // TODO
         }
     }
 

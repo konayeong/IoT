@@ -6,7 +6,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-// TODO-R
 // MODBUS TCP 프로토콜을 소켓으로 직접 구현하는 클라이언트 클래스
 public class ModbusTcpClient {
     private String host;

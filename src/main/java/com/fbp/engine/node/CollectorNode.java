@@ -2,7 +2,6 @@ package com.fbp.engine.node;
 
 import com.fbp.engine.message.Message;
 import lombok.Getter;
-
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.List;
 
 // 테스트 - 노드 출력 검증
 public class CollectorNode extends AbstractNode{
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
     @Getter
     private final List<Message> collected = new ArrayList<>();
@@ -30,6 +29,4 @@ public class CollectorNode extends AbstractNode{
 
         send("out", message);
     }
-
-
 }

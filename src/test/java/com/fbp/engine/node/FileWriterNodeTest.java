@@ -5,16 +5,15 @@ import com.fbp.engine.node.in.FileWriterNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+// TODO-SonarQube 수정
 class FileWriterNodeTest {
 
     private FileWriterNode node;
@@ -60,14 +59,17 @@ class FileWriterNodeTest {
     @DisplayName("shutdown 후 파일 닫힘 - 예외")
     void shutdown_file_close_exception() {
         String path = "test.txt";
-        FileWriterNode node = new FileWriterNode("writer", path);
+        FileWriterNode fwNode = new FileWriterNode("writer", path);
 
-        node.initialize();
-        node.onProcess(new Message(Map.of("a", 1)));
+        fwNode.initialize();
+        fwNode.onProcess(new Message(Map.of("a", 1)));
 
-        node.shutdown();
+        fwNode.shutdown();
 
-        assertThrows(RuntimeException.class, () -> node.onProcess(new Message(Map.of("b", 2))));
+        Message message = new Message(Map.of("b", 2));
+
+        assertThrows(RuntimeException.class, () -> {
+            fwNode.onProcess(message);});
 
         new File(path).delete();
     }
@@ -76,16 +78,16 @@ class FileWriterNodeTest {
     @DisplayName("shutdown 후 파일 닫힘 - 기록 안됨")
     void shutdown_file_close() throws IOException {
         String path = "test.txt";
-        FileWriterNode node = new FileWriterNode("writer", path);
+        FileWriterNode fwNode = new FileWriterNode("writer", path);
 
-        node.initialize();
-        node.onProcess(new Message(Map.of("a", 1)));
+        fwNode.initialize();
+        fwNode.onProcess(new Message(Map.of("a", 1)));
 
-        node.shutdown();
+        fwNode.shutdown();
 
         // 예외 발생 확인 x
         try {
-            node.onProcess(new Message(Map.of("b", 2)));
+            fwNode.onProcess(new Message(Map.of("b", 2)));
         } catch (Exception ignored) {}
 
         List<String> lines = Files.readAllLines(Path.of(path));

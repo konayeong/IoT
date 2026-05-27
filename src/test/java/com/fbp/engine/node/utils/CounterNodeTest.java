@@ -25,7 +25,7 @@ class CounterNodeTest {
 
     @Test
     @DisplayName("count 키 추가")
-    void add_count() {
+    void add_count() throws InterruptedException {
         Message message = new Message(Map.of("temperature", 20));
         counterNode.onProcess(message);
         assertEquals(1, connection.poll().getPayload().get("count"));
@@ -33,7 +33,7 @@ class CounterNodeTest {
 
     @Test
     @DisplayName("count 누적")
-    void counts() {
+    void counts() throws InterruptedException {
         counterNode.onProcess(new Message(Map.of("msg1", "value1")));
         counterNode.onProcess(new Message(Map.of("msg2", "value2")));
         counterNode.onProcess(new Message(Map.of("msg3", "value3")));
@@ -45,7 +45,7 @@ class CounterNodeTest {
 
     @Test
     @DisplayName("원본 키 유지")
-    void origin_key() {
+    void origin_key() throws InterruptedException {
         Message message = new Message(Map.of("temperature", 20));
         counterNode.onProcess(message);
 

@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-// transport 섹션이 없을 때
+// transport 섹션이 없을 때 (BlockingQueue 기반)
 public class LocalConnection implements Connection{
     @Getter
     private final String id;
@@ -34,18 +34,18 @@ public class LocalConnection implements Connection{
     }
 
     @Override
-    public Message poll() { // 소비
-        try {
-            return buffer.take(); // 큐가 비면 대기
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return null;
-        }
+    public Message poll() throws InterruptedException { // 소비
+        return buffer.take(); // 큐가 비면 대기
     }
 
     @Override
     public int getBufferSize() {
         return buffer.size();
+    }
+
+    @Override
+    public void close() {
+        buffer.clear();
     }
 
 }

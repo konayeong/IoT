@@ -28,7 +28,7 @@ class TransformNodeTest {
 
     @Test
     @DisplayName("변환 정상 동작")
-    void transformer() {
+    void transformer() throws InterruptedException {
         Message message = new Message(Map.of("temperature", 68.0));
         transformNode.onProcess(message);
 
@@ -49,7 +49,7 @@ class TransformNodeTest {
 
     @Test
     @DisplayName("원본 메시지 불변")
-    void orogin_message() {
+    void orogin_message() throws InterruptedException {
         Message origin = new Message(Map.of("temperature", 68.0));
         transformNode.onProcess(origin);
 

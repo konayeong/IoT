@@ -2,15 +2,15 @@ package com.fbp.engine.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
-import lombok.NoArgsConstructor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 // HTTP 응답 유틸리티 (상태 코드, JSON 직렬화)
-@NoArgsConstructor
-public class ApiResponse {
+public final class ApiResponse {
+
+    private ApiResponse() {} // 유틸리티 클래스는 public 생성자를 가지면 안된다.
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

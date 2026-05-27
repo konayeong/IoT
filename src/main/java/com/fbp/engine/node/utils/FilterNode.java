@@ -24,7 +24,7 @@ public class FilterNode extends AbstractNode {
         Number value = message.get(key);
         double object = value.doubleValue();
         // Stage2-Step2_7 조건 수정
-        if(threshold < object) {
+        if(threshold <= object) {
             send("out", message);
         }
     }

@@ -1,6 +1,7 @@
 package com.fbp.engine.core.port;
 
 import com.fbp.engine.core.Node;
+import com.fbp.engine.core.conn.Connection;
 import com.fbp.engine.message.Message;
 
 public class DefaultInputPort implements InputPort {
@@ -20,5 +21,10 @@ public class DefaultInputPort implements InputPort {
     @Override
     public void receive(Message message) {
         owner.process(message);
+    }
+
+    @Override
+    public void attach(Connection connection) {
+        connection.setTarget(this);
     }
 }

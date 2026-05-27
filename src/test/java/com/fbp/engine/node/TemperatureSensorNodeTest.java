@@ -25,7 +25,7 @@ class TemperatureSensorNodeTest {
 
     @Test
     @DisplayName("온도 범위 확인")
-    void temperature_range() {
+    void temperature_range() throws InterruptedException {
         for(int i=0; i<100; i++) {
             sensor.onProcess(new Message(Map.of()));
             double temper = (double) connection.poll().getPayload().get("temperature");
@@ -36,7 +36,7 @@ class TemperatureSensorNodeTest {
 
     @Test
     @DisplayName("필수 키 포함")
-    void contains_primaryKey() {
+    void contains_primaryKey() throws InterruptedException {
         sensor.onProcess(new Message(Map.of()));
         Message msg = connection.poll();
         Assertions.assertAll(
@@ -49,7 +49,7 @@ class TemperatureSensorNodeTest {
 
     @Test
     @DisplayName("sensorId 일치")
-    void sensorId() {
+    void sensorId() throws InterruptedException {
         sensor.onProcess(new Message(Map.of()));
         Message message = connection.poll();
         assertEquals(sensor.getId(), message.getPayload().get("sensorId"));

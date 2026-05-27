@@ -23,7 +23,7 @@ class MergeNodeTest {
 
     @Test
     @DisplayName("양쪽 입력 수신")
-    void receive_both_inputs() {
+    void receive_both_inputs() throws InterruptedException {
         Message m1 = new Message(Map.of("inputPort", "in-1", "A", "a"));
         Message m2 = new Message(Map.of("inputPort", "in-2", "One", 1));
 
@@ -37,7 +37,7 @@ class MergeNodeTest {
 
     @Test
     @DisplayName("합쳐진 메시지 출력")
-    void merge_messages() {
+    void merge_messages() throws InterruptedException {
         Message m1 = new Message(Map.of("inputPort", "in-1", "A", "a"));
         Message m2 = new Message(Map.of("inputPort", "in-2", "One", 1));
 

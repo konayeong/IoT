@@ -3,39 +3,32 @@ package com.fbp.engine.runner;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.node.*;
-import com.fbp.engine.node.in.AlertNode;
 import com.fbp.engine.node.in.FileWriterNode;
 import com.fbp.engine.node.out.TimerNode;
-import com.fbp.engine.node.utils.LogNode;
 import com.fbp.engine.node.utils.ThresholdFilterNode;
 
-// 최종 종합
 public class App {
-    public static void main(String[] args) throws InterruptedException {
+
+    public static void main(String[] args) {
         FlowEngine engine = new FlowEngine();
-        Flow flow = new Flow("final-flow");
 
-        // 노드 추가
+        Flow flow = new Flow("demo");
+
         flow.addNode(new TimerNode("timer", 1000))
-            .addNode(new TemperatureSensorNode("sensor", 15, 45))
-            .addNode(new ThresholdFilterNode("threshold", "temperature", 30))
-            .addNode(new AlertNode("alertN"))
-            .addNode(new LogNode("log"))
-            .addNode(new FileWriterNode("file", "final.txt"));
+                .addNode(new TemperatureSensorNode("sensor", 15, 45))
+                .addNode(new ThresholdFilterNode("threshold", "temperature", 30))
+                .addNode(new CollectorNode("alert"))
+                .addNode(new CollectorNode("normal"))
+                .addNode(new FileWriterNode("file", "result.txt"));
 
-        // 연결
         flow.connect("timer", "out", "sensor", "trigger")
-            .connect("sensor", "out", "threshold", "in")
-            .connect("threshold", "alert", "alertN", "in")
-            .connect("threshold", "normal", "log", "in")
-            .connect("log", "out", "file", "in");
+                .connect("sensor", "out", "threshold", "in")
+                .connect("threshold", "alert", "alert", "in")
+                .connect("threshold", "normal", "normal", "in")
+                .connect("normal", "out", "file", "in");
 
-        engine.register(flow); // flowEngine에 flow 등록
+        engine.register(flow);
 
-        engine.startFlow(flow.getId()); // 플로우 시작
-
-        Thread.sleep(10000); // 10초
-
-        engine.shutdown(); // 종료
+        engine.runCLI();
     }
 }

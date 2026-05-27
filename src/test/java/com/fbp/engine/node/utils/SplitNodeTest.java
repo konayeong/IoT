@@ -28,7 +28,7 @@ class SplitNodeTest {
 
     @Test
     @DisplayName("조건 만족 -> match 포트")
-    void success_match() {
+    void success_match() throws InterruptedException {
         Message send = new Message(Map.of("tick", 5));
         splitNode.onProcess(send);
         assertEquals(send, connection1.poll());
@@ -37,7 +37,7 @@ class SplitNodeTest {
 
     @Test
     @DisplayName("조건 미달 -> mismatch 포트")
-    void fail_mismatch() {
+    void fail_mismatch() throws InterruptedException {
         Message send = new Message(Map.of("tick", 0));
         splitNode.onProcess(send);
         assertEquals(send, connection2.poll());
@@ -46,7 +46,7 @@ class SplitNodeTest {
 
     @Test
     @DisplayName("양쪽 동시 확인")
-    void match_mismatch() {
+    void match_mismatch() throws InterruptedException {
         Message send = new Message(Map.of("tick", 5));
         Message warnMsg = new Message(Map.of("tick", 0));
 
@@ -59,7 +59,7 @@ class SplitNodeTest {
 
     @Test
     @DisplayName("경계값 처리")
-    void success_boundary() {
+    void success_boundary() throws InterruptedException {
         Message send = new Message(Map.of("tick", 3));
         splitNode.onProcess(send);
         assertEquals(send, connection1.poll());

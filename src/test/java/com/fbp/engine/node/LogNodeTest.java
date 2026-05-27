@@ -24,7 +24,7 @@ class LogNodeTest {
 
     @Test
     @DisplayName("메시지 통과 전달")
-    void message_origin_send() {
+    void message_origin_send() throws InterruptedException {
         Message msg = new Message(Map.of("tick", 5));
         logNode.process(msg);
 
@@ -35,7 +35,7 @@ class LogNodeTest {
 
     @Test
     @DisplayName("중간 삽입 가능")
-    void middle_insert() {
+    void middle_insert() throws InterruptedException {
         LocalConnection connB = new LocalConnection("connB");
 
         logNode.getOutputPort("out").connect(connB);
