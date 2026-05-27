@@ -25,6 +25,9 @@ public class Connection {
     public void deliver(Message message) {
         try {
             buffer.put(message);
+            if(target != null) {
+                target.receive(message);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);

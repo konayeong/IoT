@@ -8,7 +8,7 @@ import java.util.Map;
 public class GeneratorNode extends AbstractNode {
     public GeneratorNode(String id) {
         super(id);
-        addOutputPort(id);
+        addOutputPort("out");
     }
 
     @Override

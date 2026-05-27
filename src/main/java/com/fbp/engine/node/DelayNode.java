@@ -10,6 +10,7 @@ public class DelayNode extends AbstractNode {
     public DelayNode(String id, long delayMs) {
         super(id);
         this.delayMs = delayMs;
+        addOutputPort("out");
     }
 
     @Override

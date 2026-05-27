@@ -106,4 +106,59 @@ public class FlowEngine {
             log.info("[{}] ID : {} Status : {}", idx++, flow.getId(), flow.getFlowState());
         }
     }
+
+    /**
+     * stage1 - step8 : 간단한 CLI
+     * - Scanner로 사용자 입력을 받아서 처리
+     */
+    public void runCLI() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("FLow Engine Started");
+        boolean running = true;
+
+        while (running) {
+            System.out.print("fbp> ");
+            String input = scanner.nextLine();
+
+            if (input.isEmpty()) {
+                continue;
+            }
+
+            String[] parts = input.split(" ");
+            String command = parts[0].trim().toLowerCase();
+
+            switch (command) {
+                // list : 등록된 플로우 목록과 상태 출력
+                case "list":
+                    listFlows();
+                    break;
+                // start <id> : 플로우 시작
+                case "start":
+                    if (parts.length < 2) {
+                        System.out.println("flow id 필요");
+                        break;
+                    }
+                    startFlow(parts[1]);
+                    break;
+                // stop <id> : 플로우 정지
+                case "stop":
+                    if (parts.length < 2) {
+                        System.out.println("flow id 필요");
+                        break;
+                    }
+                    stopFlow(parts[1]);
+                    break;
+                // exit : 엔진 종료
+                case "exit":
+                    shutdown();
+                    System.out.println("[Engine] 엔진 종료됨");
+                    running = false;
+                    break;
+
+                default:
+                    System.out.println("알 수 없는 명령: " + command);
+            }
+        }
+    }
 }
