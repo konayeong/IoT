@@ -102,3 +102,27 @@ FBP Flow                                 MQTT Broker
 2. 에러 응답 : FC = 0x83 = 원래 FC + 0x80 = MSB(최상위 비트)가 1로 바뀜
 - 검증 방법
   - (fc & 0x80)이 1이면 Exception Response
+
+# Step4
+## Protocol Node 통합 / Rule 처리
+### RuleNode
+- 조건 true -> match
+- 조건 false -> mismatch
+- **규칙 표현 방식**
+  - Java Predicate (코드 내 정의)
+  ```java
+  RuleNode rule = new RuleNode("temp-rule", msg -> {
+      Double temp = msg.get("temperature");
+      return temp != null && temp > 30.0;
+  });
+    ```
+  - 문자열 기반 조건식
+  ```java
+  RuleNode rule = new RuleNode("temp-rule", "temperature > 30.0");
+  ```
+  - 복합 규칙 (AND/OR)
+  ```java
+  CompositeRule rule = new CompositeRule("complex", CompositeRule.Operator.AND);
+  rule.addCondition("temperature", ">", 30.0);
+  rule.addCondition("humidity", ">", 70.0);
+  ```
