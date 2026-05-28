@@ -109,5 +109,41 @@ NodeRegistry.register(...)
 ```
 - 플러그인이 등록되면 Flow JSON에서 일반 노드처럼 사용할 수 있다
 
+### PluginClassLoader
+- 외부 JAR 파일을 런타임에 읽어서 클래스 로딩하는 클래스 로더
+- 일반적인 자바 실행
+    - classpath에 있는 클래스만 로딩 가능
+    - 외부 JAR는 자동으로 못 읽음
+- pluginClassLoader 있으면
+    - 외부 JAR → 클래스 로딩 가능
+
 # Step8
 ## 모니터링과 관리 API
+### 목표
+- 외부에서 현재 상태를 확인하고 HTTP 요청으로 엔진을 제어할 수 있어야 한다
+### 1. 메트릭 수집
+- MetricsCollector, NodeMetrics
+- 각 노드가 메시지를 몇 개 처리했는지, 에러가 몇 번 발생했는지, 평균 처리 시간이 얼마인지 같은 실행 정보 기록
+- **NodeMetrics** : 실제 실시간 메트릭 저장소
+- **MetricsCollector** : 전체 메트릭 관리자
+- **FlowMetrics** : NodeMetrics들을 묶어서 보여주는 집계 결과
+
+### 2. HTTP 관리 API
+- HttpServer를 사용해서 REST API 서버를 만든다
+- 노드 실행
+    - → MetricsCollector가 메트릭 기록
+    - → 사용자가 HTTP 요청 전송
+    - → Handler가 메트릭 조회
+    - → JSON 응답 반환
+
+
+### REST API 엔드포인트
+
+|Method|Path|설명|요청본문|응답|
+|---|---|---|---|---|
+|GET|/flows|실행 중인 플로우 목록|	—	|[{id, name, status}]|
+|POST|/flows|새 플로우 배포플로우 정의| JSON	|{id, status}|
+|DELETE|	/flows/{id}|	플로우 중지 및 삭제|	—	|{message}|
+|GET|	/flows/{id}/metrics|	플로우 메트릭 조회	|—	|{nodes: [{id, processed, errors, avgTime}]}|
+|GET|	/nodes/{id}/stats|	노드 상세 통계	|—	|{processed, errors, avgTime, queueSize}|
+|GET|	/health|	엔진 상태	|—	|{status, uptime, flowCount}|

@@ -20,4 +20,9 @@ public class DefaultInputPort implements InputPort {
     public void receive(Message message) {
         owner.process(message);
     }
+
+    @Override
+    public Node getOwner() {
+        return owner;
+    }
 }

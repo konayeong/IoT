@@ -1,16 +1,18 @@
 package com.fbp.engine.parser;
 
+import com.fbp.engine.api.FlowNotFoundException;
 import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.registry.NodeRegistry;
+import com.sun.jdi.request.DuplicateRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class FlowManagerTest {
@@ -18,6 +20,7 @@ class FlowManagerTest {
     private NodeRegistry nodeRegistry;
     private FlowEngine flowEngine;
     private FlowManager flowManager;
+    private MetricsCollector metricsCollector;
 
     // 테스트용 노드
     static class TestNode extends AbstractNode {
@@ -33,19 +36,20 @@ class FlowManagerTest {
 
     @BeforeEach
     void setUp() {
-
         nodeRegistry = new NodeRegistry();
+        metricsCollector = new MetricsCollector();
 
         nodeRegistry.register(
                 "test",
                 TestNode::new
         );
 
-        flowEngine = new FlowEngine();
+        flowEngine = new FlowEngine(metricsCollector);
 
         flowManager = new FlowManager(
                 nodeRegistry,
-                flowEngine
+                flowEngine,
+                metricsCollector
         );
     }
 
@@ -152,36 +156,22 @@ class FlowManagerTest {
     @Test
     @DisplayName("존재하지 않는 ID 조작")
     void manipulate_unknown_flow() {
+        assertThrows(FlowNotFoundException.class, () -> flowManager.stop("unknown"));
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> flowManager.stop("unknown")
-        );
+        assertThrows(FlowNotFoundException.class, () -> flowManager.restart("unknown"));
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> flowManager.restart("unknown")
-        );
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> flowManager.remove("unknown")
-        );
+        assertThrows(IllegalArgumentException.class, () -> flowManager.remove("unknown"));
     }
 
     @Test
     @DisplayName("중복 ID 배포")
     void duplicate_flow_id() {
 
-        FlowDefinition definition =
-                createFlowDefinition("flow1");
+        FlowDefinition definition = createFlowDefinition("flow1");
 
         flowManager.deploy(definition);
 
-        assertThrows(
-                IllegalStateException.class,
-                () -> flowManager.deploy(definition)
-        );
+        assertThrows(DuplicateRequestException.class, () -> flowManager.deploy(definition));
     }
 
     @Test

@@ -1,0 +1,56 @@
+### Flow 생성
+POST http://localhost:8080/flows
+Content-Type: application/json
+
+{
+  "id": "temperature-monitoring",
+  "name": "온도 모니터링 플로우",
+  "description": "MQTT 센서 데이터를 수신하여 임계값 초과 시 알림",
+  "nodes": [
+    {
+      "id": "sensor",
+      "type": "MqttSubscriber",
+      "config": {
+        "broker": "tcp://localhost:1883",
+        "topic": "sensor/temp",
+        "qos": 1
+      }
+    },
+    {
+      "id": "rule",
+      "type": "Filter",
+      "config": {
+        "field": "value",
+        "operator": ">",
+        "threshold": 30
+      }
+    },
+    {
+      "id": "alert",
+      "type": "MqttPublisher",
+      "config": {
+        "broker": "tcp://localhost:1883",
+        "topic": "alert/temp"
+      }
+    }
+  ],
+  "connections": [
+    { "from": "sensor:out", "to": "rule:in" },
+    { "from": "rule:out", "to": "alert:in" }
+  ]
+}
+
+### Flow 목록 조회
+GET http://localhost:8080/flows
+
+### Flow metrics
+GET http://localhost:8080/flows/temperature-monitoring/metrics
+
+### Node stats
+GET http://localhost:8080/nodes/rule/status
+
+### Flow 삭제
+DELETE http://localhost:8080/flows/temperature-monitoring
+
+### Health check
+GET http://localhost:8080/health

@@ -67,8 +67,8 @@ public class MqttPublisherNode extends ProtocolNode {
             String jsonPayload = objectMapper.writeValueAsString(message.getPayload());
 
             // 2. topic 결정
-            String topic = message.getPayload().get("topic") == null
-                    ? config.get("topic").toString() : message.getPayload().get("topic").toString();
+//            String topic = message.getPayload().get("topic") == null ? config.get("topic").toString() : message.getPayload().get("topic").toString();
+            String topic = config.get("topic").toString();
 
             // 3. qos / retained 설정
             int qos = ((Number) config.getOrDefault("qos", 1)).intValue();

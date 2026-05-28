@@ -10,7 +10,7 @@ public class Connection {
     @Getter
     private final String id;
     private final BlockingQueue<Message> buffer;
-    @Setter
+    @Getter @Setter
     private InputPort target;
 
     public Connection(String id, int size) {
@@ -25,9 +25,6 @@ public class Connection {
     public void deliver(Message message) {
         try {
             buffer.put(message);
-            if(target != null) {
-                target.receive(message);
-            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
@@ -40,5 +37,9 @@ public class Connection {
 
     public int getBufferSize() {
         return buffer.size();
+    }
+
+    public void transfer(Message msg) {
+        target.receive(msg);
     }
 }

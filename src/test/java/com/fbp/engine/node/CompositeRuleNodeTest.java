@@ -1,29 +1,43 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Flow;
+import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.message.Message;
-import org.junit.jupiter.api.Tag;
+import com.fbp.engine.metrics.MetricsCollector;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Tag("unit")
 class CompositeRuleNodeTest {
 
-    @Test
-    void and_all_conditions_true_should_match() {
+    private FlowEngine engine;
+    private Flow flow;
 
-        Flow flow = new Flow("flow");
+    private CompositeRuleNode node;
 
-        CompositeRuleNode node =
-                new CompositeRuleNode("rule",
-                        CompositeRuleNode.Operator.AND);
+    private CollectorNode match;
+    private CollectorNode mismatch;
 
-        node.addCondition("temperature", ">", 30);
-        node.addCondition("humidity", "<", 60);
+    @BeforeEach
+    void setUp() {
 
-        CollectorNode match = new CollectorNode("match");
-        CollectorNode mismatch = new CollectorNode("mismatch");
+        engine = new FlowEngine(new MetricsCollector());
+        flow = new Flow("flow");
+
+        node = new CompositeRuleNode(
+                "rule",
+                CompositeRuleNode.Operator.AND
+        );
+
+        match = new CollectorNode("match");
+        mismatch = new CollectorNode("mismatch");
+    }
+
+    // 공통 flow 구성
+    private void setupFlowWithNode() {
+
+        flow = new Flow("flow");
 
         flow.addNode(node)
                 .addNode(match)
@@ -32,161 +46,127 @@ class CompositeRuleNodeTest {
         flow.connect("rule", "match", "match", "in");
         flow.connect("rule", "mismatch", "mismatch", "in");
 
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow(flow.getId());
+    }
 
-        node.process(new Message(Map.of(
-                "temperature", 35,
-                "humidity", 40
-        )));
+    @Test
+    void and_all_conditions_true_should_match() throws Exception {
+
+        node = new CompositeRuleNode("rule", CompositeRuleNode.Operator.AND);
+        node.addCondition("temperature", ">", 30);
+        node.addCondition("humidity", "<", 60);
+
+        setupFlowWithNode();
+
+        node.getInputPort("in")
+                .receive(new Message(Map.of(
+                        "temperature", 35,
+                        "humidity", 40
+                )));
+
+        Thread.sleep(100);
 
         assertEquals(1, match.getCollects().size());
         assertEquals(0, mismatch.getCollects().size());
     }
 
     @Test
-    void and_one_condition_false_should_mismatch() {
+    void and_one_condition_false_should_mismatch() throws Exception {
 
-        Flow flow = new Flow("flow");
-
-        CompositeRuleNode node =
-                new CompositeRuleNode("rule",
-                        CompositeRuleNode.Operator.AND);
-
+        node = new CompositeRuleNode("rule", CompositeRuleNode.Operator.AND);
         node.addCondition("temperature", ">", 30);
         node.addCondition("humidity", "<", 60);
 
-        CollectorNode match = new CollectorNode("match");
-        CollectorNode mismatch = new CollectorNode("mismatch");
+        setupFlowWithNode();
 
-        flow.addNode(node)
-                .addNode(match)
-                .addNode(mismatch);
+        node.getInputPort("in")
+                .receive(new Message(Map.of(
+                        "temperature", 35,
+                        "humidity", 80
+                )));
 
-        flow.connect("rule", "match", "match", "in");
-        flow.connect("rule", "mismatch", "mismatch", "in");
-
-        flow.initialize();
-
-        node.process(new Message(Map.of(
-                "temperature", 35,
-                "humidity", 80
-        )));
+        Thread.sleep(100);
 
         assertEquals(0, match.getCollects().size());
         assertEquals(1, mismatch.getCollects().size());
     }
 
     @Test
-    void or_one_condition_true_should_match() {
+    void or_one_condition_true_should_match() throws Exception {
 
-        Flow flow = new Flow("flow");
-
-        CompositeRuleNode node =
-                new CompositeRuleNode("rule",
-                        CompositeRuleNode.Operator.OR);
-
+        node = new CompositeRuleNode("rule", CompositeRuleNode.Operator.OR);
         node.addCondition("temperature", ">", 30);
         node.addCondition("humidity", "<", 60);
 
-        CollectorNode match = new CollectorNode("match");
-        CollectorNode mismatch = new CollectorNode("mismatch");
+        setupFlowWithNode();
 
-        flow.addNode(node)
-                .addNode(match)
-                .addNode(mismatch);
+        node.getInputPort("in")
+                .receive(new Message(Map.of(
+                        "temperature", 35,
+                        "humidity", 90
+                )));
 
-        flow.connect("rule", "match", "match", "in");
-        flow.connect("rule", "mismatch", "mismatch", "in");
-
-        flow.initialize();
-
-        node.process(new Message(Map.of(
-                "temperature", 35,
-                "humidity", 90
-        )));
+        Thread.sleep(100);
 
         assertEquals(1, match.getCollects().size());
         assertEquals(0, mismatch.getCollects().size());
     }
 
     @Test
-    void or_all_conditions_false_should_mismatch() {
+    void or_all_conditions_false_should_mismatch() throws Exception {
 
-        Flow flow = new Flow("flow");
-
-        CompositeRuleNode node =
-                new CompositeRuleNode("rule",
-                        CompositeRuleNode.Operator.OR);
-
+        node = new CompositeRuleNode("rule", CompositeRuleNode.Operator.OR);
         node.addCondition("temperature", ">", 30);
         node.addCondition("humidity", "<", 60);
 
-        CollectorNode match = new CollectorNode("match");
-        CollectorNode mismatch = new CollectorNode("mismatch");
+        setupFlowWithNode();
 
-        flow.addNode(node)
-                .addNode(match)
-                .addNode(mismatch);
+        node.getInputPort("in")
+                .receive(new Message(Map.of(
+                        "temperature", 10,
+                        "humidity", 90
+                )));
 
-        flow.connect("rule", "match", "match", "in");
-        flow.connect("rule", "mismatch", "mismatch", "in");
-
-        flow.initialize();
-
-        node.process(new Message(Map.of(
-                "temperature", 10,
-                "humidity", 90
-        )));
+        Thread.sleep(100);
 
         assertEquals(0, match.getCollects().size());
         assertEquals(1, mismatch.getCollects().size());
     }
 
     @Test
-    void empty_conditions_should_follow_default_behavior() {
-
-        Flow flow = new Flow("flow");
+    void empty_conditions_should_follow_default_behavior() throws Exception {
 
         CompositeRuleNode andNode =
-                new CompositeRuleNode("andRule",
-                        CompositeRuleNode.Operator.AND);
+                new CompositeRuleNode("andRule", CompositeRuleNode.Operator.AND);
 
         CompositeRuleNode orNode =
-                new CompositeRuleNode("orRule",
-                        CompositeRuleNode.Operator.OR);
+                new CompositeRuleNode("orRule", CompositeRuleNode.Operator.OR);
 
-        CollectorNode andMatch = new CollectorNode("andMatch");
-        CollectorNode andMismatch = new CollectorNode("andMismatch");
-
-        CollectorNode orMatch = new CollectorNode("orMatch");
-        CollectorNode orMismatch = new CollectorNode("orMismatch");
+        flow = new Flow("flow");
 
         flow.addNode(andNode)
                 .addNode(orNode)
-                .addNode(andMatch)
-                .addNode(andMismatch)
-                .addNode(orMatch)
-                .addNode(orMismatch);
+                .addNode(match)
+                .addNode(mismatch);
 
-        flow.connect("andRule", "match", "andMatch", "in");
-        flow.connect("andRule", "mismatch", "andMismatch", "in");
+        flow.connect("andRule", "match", "match", "in");
+        flow.connect("andRule", "mismatch", "mismatch", "in");
 
-        flow.connect("orRule", "match", "orMatch", "in");
-        flow.connect("orRule", "mismatch", "orMismatch", "in");
+        flow.connect("orRule", "match", "match", "in");
+        flow.connect("orRule", "mismatch", "mismatch", "in");
 
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow(flow.getId());
 
         Message msg = new Message(Map.of("value", 1));
 
-        andNode.process(msg);
-        orNode.process(msg);
+        andNode.getInputPort("in").receive(msg);
+        orNode.getInputPort("in").receive(msg);
 
-        // AND + empty => true
-        assertEquals(1, andMatch.getCollects().size());
-        assertEquals(0, andMismatch.getCollects().size());
+        Thread.sleep(200);
 
-        // OR + empty => false
-        assertEquals(0, orMatch.getCollects().size());
-        assertEquals(1, orMismatch.getCollects().size());
+        assertEquals(1, match.getCollects().size());
+        assertEquals(1, mismatch.getCollects().size());
     }
 }

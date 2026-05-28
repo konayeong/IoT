@@ -1,5 +1,6 @@
 package com.fbp.engine.core;
 
+import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.node.FilterNode;
 import com.fbp.engine.node.PrintNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,8 @@ class FlowEngineTest {
 
     @BeforeEach
     void setUp() {
-        flowEngine = new FlowEngine();
+        MetricsCollector metricsCollector = new MetricsCollector();
+        flowEngine = new FlowEngine(metricsCollector);
 
         flow = new Flow("flow-test");
         flow.addNode(new FilterNode("filter", "tick", 3))

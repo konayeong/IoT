@@ -3,6 +3,7 @@ package com.fbp.engine.node;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.metrics.MetricsCollector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,8 @@ class CollectorNodeTest {
     @Test
     @DisplayName("파이프라인 연결 검증")
     void pipeline() throws InterruptedException {
-        FlowEngine engine = new FlowEngine();
+        MetricsCollector metricsCollector = new MetricsCollector();
+        FlowEngine engine = new FlowEngine(metricsCollector);
         Flow flow = new Flow("pipeline-test");
 
         GeneratorNode generator = new GeneratorNode("gen");
@@ -73,7 +75,6 @@ class CollectorNodeTest {
         generator.generate("key1", "value1");
         generator.generate("key2", "value2");
         generator.generate("key3", "value3");
-
 
         Thread.sleep(200);
 

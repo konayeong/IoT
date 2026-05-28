@@ -3,6 +3,7 @@ package com.fbp.engine.runner.stage1;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.node.*;
 import org.junit.jupiter.api.*;
 import java.io.File;
@@ -21,7 +22,8 @@ class Step10FinalTest {
 
     @BeforeEach
     void setUp() {
-        engine = new FlowEngine();
+        MetricsCollector metricsCollector = new MetricsCollector();
+        engine = new FlowEngine(metricsCollector);
         flow = new Flow("stage1-final-test");
 
         flow.addNode(new TimerNode("timer", 1000))

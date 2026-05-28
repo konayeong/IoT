@@ -2,12 +2,13 @@ package com.fbp.engine.core;
 
 import lombok.Getter;
 import lombok.Setter;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Getter
 public class Flow {
     // 노드 방문 상태
@@ -24,6 +25,9 @@ public class Flow {
     }
 
     private final String id;
+    private String name;
+    private String description;
+
     private final Map<String, AbstractNode> nodes = new HashMap<>();
     private final List<Connection> connections = new ArrayList<>();
     @Setter
@@ -33,12 +37,20 @@ public class Flow {
         this.id = id;
     }
 
+    public Flow(String id, String name, String description) {
+        // step8
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
     public Flow addNode(AbstractNode node) {
         nodes.put(node.getId(), node);
         return this; // 메서드 체이닝 지원
     }
 
     public Flow connect(String sourceNodeId, String sourcePort, String targetNodeId, String targetPort) {
+        log.info("connect {} → {}", sourceNodeId, targetNodeId);
         AbstractNode sourceNode = nodes.get(sourceNodeId);
         AbstractNode targetNode = nodes.get(targetNodeId);
 
@@ -68,6 +80,7 @@ public class Flow {
         connections.add(connection);
 
         return this;
+
     }
 
     public void initialize() {

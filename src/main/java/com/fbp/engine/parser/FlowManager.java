@@ -1,16 +1,20 @@
 package com.fbp.engine.parser;
 
+import com.fbp.engine.api.FlowNotFoundException;
 import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.core.Node;
+import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.registry.NodeRegistry;
+import com.sun.jdi.request.DuplicateRequestException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * FlowDefinition → Runtime Flow 생성
@@ -24,11 +28,12 @@ public class FlowManager {
     private final NodeRegistry nodeRegistry;
     private final FlowEngine flowEngine;
     private final Map<String, Flow> deployedFlows = new ConcurrentHashMap<>();
+    private final MetricsCollector metricsCollector;
 
     /**
      * Flow 배포 및 실행
      */
-    public void deploy(FlowDefinition definition) {
+    public Flow deploy(FlowDefinition definition) {
 
         if (definition == null) {
             throw new IllegalArgumentException("FlowDefinition은 null일 수 없습니다.");
@@ -38,13 +43,11 @@ public class FlowManager {
 
         // 중복 배포 방지
         if (deployedFlows.containsKey(flowId)) {
-            throw new IllegalStateException("이미 존재하는 Flow ID: " + flowId);
+            throw new DuplicateRequestException("이미 존재하는 Flow ID: " + flowId);
         }
 
-        log.info("Flow 배포 시작: {} ({})", definition.name(), flowId);
-
         // Runtime Flow 생성
-        Flow flow = new Flow(definition.id());
+        Flow flow = new Flow(definition.id(), definition.name(), definition.description());
 
         // Node 생성
         for (NodeDefinition nodeDef : definition.nodes()) {
@@ -62,6 +65,13 @@ public class FlowManager {
             flow.addNode(absNode);
         }
 
+        Set<String> nodeIds = definition.nodes()
+                .stream()
+                .map(NodeDefinition::id)
+                .collect(Collectors.toSet());
+
+        metricsCollector.registerFlow(flowId, nodeIds);
+
         // Connection 연결
         for (ConnectionDefinition connDef : definition.connections()) {
             flow.connect(connDef.fromNode(), connDef.fromPort(), connDef.toNode(), connDef.toPort());
@@ -78,6 +88,8 @@ public class FlowManager {
         deployedFlows.put(flowId, flow);
 
         log.info("Flow 배포 완료: {}", flowId);
+
+        return flow;
     }
 
     /**
@@ -109,8 +121,11 @@ public class FlowManager {
      * Flow 제거
      * 실행 중이면 자동 stop 후 제거
      */
-    public void remove(String flowId) {
-        Flow flow = getRequiredFlow(flowId);
+    public boolean remove(String flowId) {
+        Flow flow = deployedFlows.get(flowId);
+        if(flow == null) {
+            throw new IllegalArgumentException();
+        }
 
         // 실행 중이면 자동 정지
         if (flow.getFlowState() == Flow.FlowState.RUNNING) {
@@ -119,8 +134,8 @@ public class FlowManager {
 
         // 저장소 제거
         deployedFlows.remove(flowId);
-
         log.info("Flow 제거 완료: {}", flowId);
+        return true;
     }
 
     public Flow.FlowState getStatus(String flowId) {
@@ -135,11 +150,34 @@ public class FlowManager {
         return Collections.unmodifiableCollection(deployedFlows.values());
     }
 
+    // == Step8 ==
+    // 실행 중인 플로우 목록
+    public List<Flow> getRunningFlows() {
+        return deployedFlows.values().stream()
+                .filter(f -> f.getFlowState() == Flow.FlowState.RUNNING).toList();
+    }
+
+    // Engine Status
+    public String getEngineStatus() {
+        return flowEngine.getState().name();
+    }
+
+    // Engine startTime
+    public long getEngineStart() {
+        return flowEngine.getStart();
+    }
+
+    // 실행 중인 flow 개수
+    public int flowSize() {
+        return deployedFlows.values().stream()
+                .filter(f -> f.getFlowState() == Flow.FlowState.RUNNING).toList().size();
+    }
+
     private Flow getRequiredFlow(String flowId) {
         Flow flow = deployedFlows.get(flowId);
 
         if (flow == null) {
-            throw new IllegalArgumentException("존재하지 않는 Flow ID: " + flowId);
+            throw new FlowNotFoundException(flowId);
         }
 
         return flow;

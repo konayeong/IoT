@@ -1,12 +1,16 @@
 package com.fbp.engine.core;
 
+import com.fbp.engine.message.Message;
+import com.fbp.engine.metrics.MetricsCollector;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * FBP 엔진의 최상위 관리자
@@ -26,10 +30,16 @@ public class FlowEngine {
 
     private final Map<String, Flow> flows;
     private State state;
+    private final ExecutorService executorService;
+    private final long start;
+    private final MetricsCollector metricsCollector;
 
-    public FlowEngine() {
+    public FlowEngine(MetricsCollector metricsCollector) {
         this.state = State.INITIALIZED;
         this.flows = new HashMap<>();
+        this.executorService = Executors.newFixedThreadPool(20);
+        this.start = System.currentTimeMillis();
+        this.metricsCollector = metricsCollector;
     }
 
     /**
@@ -60,6 +70,35 @@ public class FlowEngine {
         }
 
         flow.initialize();
+        for (Connection conn : flow.getConnections()) {
+            executorService.submit(() -> {
+                try {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        Message msg = conn.poll();
+
+                        if (conn.getTarget() != null) {
+                            long start = System.nanoTime();
+
+                            try {
+                                conn.transfer(msg);
+                                metricsCollector.recordSuccess(
+                                        conn.getTarget().getOwner().getId(),
+                                        System.nanoTime() - start
+                                );
+                            } catch (Exception e) {
+                                metricsCollector.recordFailure(
+                                        conn.getTarget().getOwner().getId(),
+                                        System.nanoTime() - start
+                                );
+                            }
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+        }
+
         flow.setFlowState(Flow.FlowState.RUNNING);
         this.state = State.RUNNING;
         log.info("[Engine] 플로우 {} 시작됨", flow.getId());
@@ -90,6 +129,9 @@ public class FlowEngine {
             }
         }
         this.state = State.STOPPED;
+        if(executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
     }
 
     /**

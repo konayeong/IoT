@@ -28,8 +28,6 @@ public class JsonFlowParser implements FlowParser {
 
             return new FlowDefinition(id, name, description, nodes, connections);
 
-        } catch (FlowParserException e) {
-            throw e;
         } catch (Exception e) {
             throw new FlowParserException("JSON 파싱 실패", e);
         }
