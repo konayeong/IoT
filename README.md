@@ -78,3 +78,36 @@ FlowManager.deploy(Flow) → FlowEngine에 등록 및 실행
 ```
 # Step 6~7
 ## 플러그인 아키텍처 개념 설계
+### ServiceLoader
+> Java의 SPI(Service Provider Interface) 기반 확장 메커니즘
+- 인터페이스 구현체를 자동으로 탐색하고 로드할 수 있다
+- 본 프로젝트에서는: `ServiceLoader<NodeProvider>`를 사용하여 플러그인 노드 제공자를 자동 발견한다.
+- 플러그인 JAR 내부에는 다음 파일이 필요하다: `META-INF/services/com.fbp.engine.plugin.NodeProvider`
+- 파일 내용에는 구현 클래스의 전체 이름(FQCN)을 작성한다
+  - 예시: `com.example.plugin.CustomNodeProvider`
+- 이를 통해 엔진 수정 없이 새로운 노드를 동적으로 확장할 수 있다.
+
+### PluginManager
+> 플러그인 시스템의 진입점 역할을 담당
+- 주요 역할
+
+  - ClassPath 기반 플러그인 로드
+  - plugins/ 디렉토리의 외부 JAR 플러그인 로드
+  - NodeProvider 탐색
+  - 플러그인 노드를 NodeRegistry에 자동 등록
+  - 타입 충돌 및 잘못된 플러그인 검증 처리
+
+- 동작 흐름
+```text
+PluginManager
+    ↓
+ServiceLoader<NodeProvider>
+    ↓
+NodeDescriptor
+    ↓
+NodeRegistry.register(...)
+```
+- 플러그인이 등록되면 Flow JSON에서 일반 노드처럼 사용할 수 있다
+
+# Step8
+## 모니터링과 관리 API
