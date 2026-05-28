@@ -1,128 +1,61 @@
 # IoT Rule Engine
-# Step1
-## 네트워크 + ProtocolNode
-### ProtocolNode 핵심 책임
-> 외부 통신 노드들의 공통 기능(연결, 상태, 재연결) 추상화
-1. 연결 상태 관리
-2. initialize() : 노드 시작 = 외부 연결 시작
-3. shutdown() : 외부 자원 정리
-4. reconnect() : 연결 끊기면 자동 재시도
+# Step1~3
+## 기본 엔진 구현 + 확장 아키텍처 설계
+### NodeRegistry
+> 노드 생성 중앙 관리소 역할
 
+- 문자열 타입명과 실제 노드 생성 로직을 연결해주는 역할
+- `typeName → NodeFactory → Node 생성`
+- **NodeFactory**
+    - config를 받아 실제 Node 생성
+    - 노드 생성 함수형 인터페이스
+        - 람다 등록이 가능함
+    - Factory ?
+        - 노드마다 생성 규칙이 다름
+        - 공통 생성 인터페이스가 필요
 
-### ProtocolNode Scheduler 구조
-```java
-initialize()
-   │
-   ├── connect 성공 → CONNECTED (끝)
-   │
-   └── connect 실패 → ERROR
-             │
-             ▼
-      startReconnect()
-             │
-     (5초 후 실행 예약)
-             │
-             ▼
-        reconnect()
-             │
-     ┌───────┴────────┐
-     │                │
- connect 성공     connect 실패
-     │                │
- CONNECTED      ERROR → startReconnect()
-                        │
-                        ▼
-                 다시 5초 후 reconnect
-```
+# Step 4~5
+### 플로우 정의 포맷 설계
+- 엔진은 외부 JSON/YAML 정의를 읽어서 플로우를 구성(노드 생성, 포트 연결, 플로우 실행)해야 한다
+- 플로우 정의 예시 (JSON)
 
-# Step2
-## MQTT
-> 발행(Publish) / 구독(Subscribe) 기반 메시지 브로커
-### 핵심 개념
-```text
-                          ┌─────────────┐
-  [Sensor A] ──publish──→ │             │ ──→ [Subscriber 1]
-                          │ MQTT Broker │
-  [Sensor B] ──publish──→ │ (Mosquitto) │ ──→ [Subscriber 2]
-                          │             │
-                          └─────────────┘
-```
-- Broker : 메시지 중개자. 발행자와 구독자를 연결
-- Topic : 메시지의 주소. 계층 구조
-- QoS : 메시지 전달 보장 수준 (0, 1, 2)
-- Retained Message : Broker가 토픽의 마지막 메시지 저장. 새 구독자가 연결하면 즉시 최신 값을 받을 수 있음
-- Last Will and Testament (LWT) : 클라이언트가 비정상 종료 시 Broker는 미리 등록된 유언 메시지 발행
-
-### MqttSubscriberNode / MqttPublisherNode
-- **SubscriberNode** : MQTT Broker에서 들어오는 메시지를 FBP 메시지로 변환해서 Flow에 주입하는 Source Node
-```text
-MQTT Broker                   FBP 플로우
-                                   ┌──────────────────────┐
- topic: sensor/temp                │  MqttSubscriberNode  │
-  ──(MQTT message)──→ callback ──→ │  "out" OutputPort    │──→ [next node]
-                                   └──────────────────────┘
-```
-- **PublisherNode** : FBP에서 나온 Message를 MQTT Broker로 “외부로 내보내는 Sink Node”
-```text
-FBP Flow                                 MQTT Broker
-                  ┌────────────────────┐
-[Previous Node]──→│  MqttPublisherNode │
-                  │  "in" InputPort    │──(MQTT Publish)──→ topic: alert/temp
-                  └────────────────────┘
-```
-
-# Step3
-## MODBUS
-> 마스터-슬레이브 구조 (슬레이브는 먼저 데이터를 보내지 않는다)
-### MODBUS TCP 프레임 구조
-- MBAP Header (7byte)
-    - MODBUS TCP 고유의 헤더
-    - 모든 요청과 응답에 포함
-
-        ``` 
-        바이트 위치:  [0][1]     [2][3]    [4][5]          [6]
-                   ──────     ──────    ──────          ───
-        의미:       트랜잭션 ID  프로토콜 ID  길이(이후 바이트수) 유닛 ID
-                   (2byte)    (2byte)   (2byte)         (1byte)
-        ```
-
-      | **필드** | **크기** | **설명**                             |
-                    | --- | --- |------------------------------------|
-      | Transaction ID | 2 바이트 | 요청/응답 쌍을 식별. 요청에서 보낸 값이 응답에 그대로 돌아옴 |
-      | Protocol ID | 2 바이트 | 항상`0x0000`(MODBUS 프로토콜)            |
-      | Length | 2 바이트 | 이 필드 이후의 바이트 수 (Unit ID + PDU 길이)  |
-      | Unit ID | 1 바이트 | 슬레이브 ID. TCP에서는 보통 `0x01`또는`0xFF`  |
-
-- PDU (5 byte)
-
-  ![modbus-tcp](./docs/modbus-tcp-frame.png)
-
-### Modbus TCP 응답
-1. 정상 응답 : FC = 0x03
-2. 에러 응답 : FC = 0x83 = 원래 FC + 0x80 = MSB(최상위 비트)가 1로 바뀜
-- 검증 방법
-  - (fc & 0x80)이 1이면 Exception Response
-
-# Step4
-## Protocol Node 통합 / Rule 처리
-### RuleNode
-- 조건 true -> match
-- 조건 false -> mismatch
-- **규칙 표현 방식**
-  - Java Predicate (코드 내 정의)
-  ```java
-  RuleNode rule = new RuleNode("temp-rule", msg -> {
-      Double temp = msg.get("temperature");
-      return temp != null && temp > 30.0;
-  });
+    ```json
+    {
+      "id": "temperature-monitoring",
+      "name": "온도 모니터링 플로우",
+      "description": "MQTT 센서 데이터를 수신하여 임계값 초과 시 알림",
+      "nodes": [
+        {
+          "id": "sensor",
+          "type": "MqttSubscriber",
+          "config": {
+            "broker": "tcp://localhost:1883",
+            "topic": "sensor/temp",
+            "qos": 1
+          }
+        },
+        {
+          "id": "rule",
+          "type": "ThresholdFilter",
+          "config": {
+            "field": "value",
+            "operator": ">",
+            "threshold": 30
+          }
+        },
+        {
+          "id": "alert",
+          "type": "MqttPublisher",
+          "config": {
+            "broker": "tcp://localhost:1883",
+            "topic": "alert/temp"
+          }
+        }
+      ],
+      "connections": [
+        { "from": "sensor:out", "to": "rule:in" },
+        { "from": "rule:out", "to": "alert:in" }
+      ]
+    }
     ```
-  - 문자열 기반 조건식
-  ```java
-  RuleNode rule = new RuleNode("temp-rule", "temperature > 30.0");
-  ```
-  - 복합 규칙 (AND/OR)
-  ```java
-  CompositeRule rule = new CompositeRule("complex", CompositeRule.Operator.AND);
-  rule.addCondition("temperature", ">", 30.0);
-  rule.addCondition("humidity", ">", 70.0);
-  ```
+### 플러그인 아키텍처 개념 설계
