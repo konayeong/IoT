@@ -1,18 +1,18 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Flow;
+import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.message.Message;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Tag("unit")
 class CompositeRuleNodeTest {
 
     @Test
-    void and_all_conditions_true_should_match() {
+    void and_all_conditions_true_should_match() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         CompositeRuleNode node =
@@ -32,20 +32,26 @@ class CompositeRuleNodeTest {
         flow.connect("rule", "match", "match", "in");
         flow.connect("rule", "mismatch", "mismatch", "in");
 
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow("flow");
 
         node.process(new Message(Map.of(
                 "temperature", 35,
                 "humidity", 40
         )));
 
+        Thread.sleep(100);
+
         assertEquals(1, match.getCollects().size());
         assertEquals(0, mismatch.getCollects().size());
+
+        engine.shutdown();
     }
 
     @Test
-    void and_one_condition_false_should_mismatch() {
+    void and_one_condition_false_should_mismatch() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         CompositeRuleNode node =
@@ -65,20 +71,26 @@ class CompositeRuleNodeTest {
         flow.connect("rule", "match", "match", "in");
         flow.connect("rule", "mismatch", "mismatch", "in");
 
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow("flow");
 
         node.process(new Message(Map.of(
                 "temperature", 35,
                 "humidity", 80
         )));
 
+        Thread.sleep(100);
+
         assertEquals(0, match.getCollects().size());
         assertEquals(1, mismatch.getCollects().size());
+
+        engine.shutdown();
     }
 
     @Test
-    void or_one_condition_true_should_match() {
+    void or_one_condition_true_should_match() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         CompositeRuleNode node =
@@ -98,20 +110,26 @@ class CompositeRuleNodeTest {
         flow.connect("rule", "match", "match", "in");
         flow.connect("rule", "mismatch", "mismatch", "in");
 
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow("flow");
 
         node.process(new Message(Map.of(
                 "temperature", 35,
                 "humidity", 90
         )));
 
+        Thread.sleep(100);
+
         assertEquals(1, match.getCollects().size());
         assertEquals(0, mismatch.getCollects().size());
+
+        engine.shutdown();
     }
 
     @Test
-    void or_all_conditions_false_should_mismatch() {
+    void or_all_conditions_false_should_mismatch() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         CompositeRuleNode node =
@@ -131,20 +149,26 @@ class CompositeRuleNodeTest {
         flow.connect("rule", "match", "match", "in");
         flow.connect("rule", "mismatch", "mismatch", "in");
 
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow("flow");
 
         node.process(new Message(Map.of(
                 "temperature", 10,
                 "humidity", 90
         )));
 
+        Thread.sleep(100);
+
         assertEquals(0, match.getCollects().size());
         assertEquals(1, mismatch.getCollects().size());
+
+        engine.shutdown();
     }
 
     @Test
-    void empty_conditions_should_follow_default_behavior() {
+    void empty_conditions_should_follow_default_behavior() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         CompositeRuleNode andNode =
@@ -174,12 +198,15 @@ class CompositeRuleNodeTest {
         flow.connect("orRule", "match", "orMatch", "in");
         flow.connect("orRule", "mismatch", "orMismatch", "in");
 
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow("flow");
 
         Message msg = new Message(Map.of("value", 1));
 
         andNode.process(msg);
         orNode.process(msg);
+
+        Thread.sleep(100);
 
         // AND + empty => true
         assertEquals(1, andMatch.getCollects().size());
@@ -188,5 +215,7 @@ class CompositeRuleNodeTest {
         // OR + empty => false
         assertEquals(0, orMatch.getCollects().size());
         assertEquals(1, orMismatch.getCollects().size());
+
+        engine.shutdown();
     }
 }

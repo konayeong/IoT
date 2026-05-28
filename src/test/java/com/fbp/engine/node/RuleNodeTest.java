@@ -1,6 +1,7 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Flow;
+import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
@@ -9,8 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class RuleNodeFlowTest {
 
     @Test
-    void condition_match_should_go_to_match_port() {
+    void condition_match_should_go_to_match_port() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         RuleNode rule = new RuleNode("rule",
@@ -21,22 +23,27 @@ class RuleNodeFlowTest {
 
         flow.addNode(rule)
                 .addNode(match)
-                .addNode(mismatch);
+                .addNode(mismatch)
+                .connect("rule", "match", "match", "in")
+                .connect("rule", "mismatch", "mismatch", "in");
 
-        flow.connect("rule", "match", "match", "in");
-        flow.connect("rule", "mismatch", "mismatch", "in");
-
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow(flow.getId());
 
         rule.process(new Message(Map.of("value", 20)));
 
+        Thread.sleep(100);
+
         assertEquals(1, match.getCollects().size());
         assertEquals(0, mismatch.getCollects().size());
+
+        engine.shutdown();
     }
 
     @Test
-    void condition_mismatch_should_go_to_mismatch_port() {
+    void condition_mismatch_should_go_to_mismatch_port() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         RuleNode rule = new RuleNode("rule",
@@ -47,17 +54,21 @@ class RuleNodeFlowTest {
 
         flow.addNode(rule)
                 .addNode(match)
-                .addNode(mismatch);
+                .addNode(mismatch)
+                .connect("rule", "match", "match", "in")
+                .connect("rule", "mismatch", "mismatch", "in");
 
-        flow.connect("rule", "match", "match", "in");
-        flow.connect("rule", "mismatch", "mismatch", "in");
-
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow(flow.getId());
 
         rule.process(new Message(Map.of("value", 5)));
 
+        Thread.sleep(100);
+
         assertEquals(0, match.getCollects().size());
         assertEquals(1, mismatch.getCollects().size());
+
+        engine.shutdown();
     }
 
     @Test
@@ -71,8 +82,9 @@ class RuleNodeFlowTest {
     }
 
     @Test
-    void null_field_should_not_throw_exception() {
+    void null_field_should_not_throw_exception() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         RuleNode rule = new RuleNode("rule",
@@ -86,21 +98,29 @@ class RuleNodeFlowTest {
 
         flow.addNode(rule)
                 .addNode(match)
-                .addNode(mismatch);
+                .addNode(mismatch)
+                .connect("rule", "match", "match", "in")
+                .connect("rule", "mismatch", "mismatch", "in");
 
-        flow.connect("rule", "match", "match", "in");
-        flow.connect("rule", "mismatch", "mismatch", "in");
-
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow(flow.getId());
 
         assertDoesNotThrow(() ->
                 rule.process(new Message(Map.of()))
         );
+
+        Thread.sleep(100);
+
+        assertEquals(0, match.getCollects().size());
+        assertEquals(1, mismatch.getCollects().size());
+
+        engine.shutdown();
     }
 
     @Test
-    void multiple_messages_should_route_correctly() {
+    void multiple_messages_should_route_correctly() throws InterruptedException {
 
+        FlowEngine engine = new FlowEngine();
         Flow flow = new Flow("flow");
 
         RuleNode rule = new RuleNode("rule",
@@ -111,18 +131,22 @@ class RuleNodeFlowTest {
 
         flow.addNode(rule)
                 .addNode(match)
-                .addNode(mismatch);
+                .addNode(mismatch)
+                .connect("rule", "match", "match", "in")
+                .connect("rule", "mismatch", "mismatch", "in");
 
-        flow.connect("rule", "match", "match", "in");
-        flow.connect("rule", "mismatch", "mismatch", "in");
-
-        flow.initialize();
+        engine.register(flow);
+        engine.startFlow(flow.getId());
 
         rule.process(new Message(Map.of("value", 20)));
         rule.process(new Message(Map.of("value", 5)));
         rule.process(new Message(Map.of("value", 30)));
 
+        Thread.sleep(200);
+
         assertEquals(2, match.getCollects().size());
         assertEquals(1, mismatch.getCollects().size());
+
+        engine.shutdown();
     }
 }

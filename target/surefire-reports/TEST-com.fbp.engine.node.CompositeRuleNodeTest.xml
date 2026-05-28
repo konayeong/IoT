@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.fbp.engine.node.FilterNodeTest" time="0.002" tests="5" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.fbp.engine.node.CompositeRuleNodeTest" time="0.005" tests="5" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -59,9 +59,9 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="notExists_key" classname="com.fbp.engine.node.FilterNodeTest" time="0.001"/>
-  <testcase name="process_equals" classname="com.fbp.engine.node.FilterNodeTest" time="0.0"/>
-  <testcase name="process_failed" classname="com.fbp.engine.node.FilterNodeTest" time="0.001"/>
-  <testcase name="getPort" classname="com.fbp.engine.node.FilterNodeTest" time="0.0"/>
-  <testcase name="process_success" classname="com.fbp.engine.node.FilterNodeTest" time="0.0"/>
+  <testcase name="or_all_conditions_false_should_mismatch" classname="com.fbp.engine.node.CompositeRuleNodeTest" time="0.002"/>
+  <testcase name="empty_conditions_should_follow_default_behavior" classname="com.fbp.engine.node.CompositeRuleNodeTest" time="0.001"/>
+  <testcase name="or_one_condition_true_should_match" classname="com.fbp.engine.node.CompositeRuleNodeTest" time="0.001"/>
+  <testcase name="and_one_condition_false_should_mismatch" classname="com.fbp.engine.node.CompositeRuleNodeTest" time="0.001"/>
+  <testcase name="and_all_conditions_true_should_match" classname="com.fbp.engine.node.CompositeRuleNodeTest" time="0.0"/>
 </testsuite>

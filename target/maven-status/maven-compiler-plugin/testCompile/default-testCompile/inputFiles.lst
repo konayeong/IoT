@@ -5,10 +5,12 @@
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/core/FlowEngineTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/core/FlowTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/core/ProtocolNodeTest.java
+/Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/core/RuleExpressionTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/core/impl/DefaultInputPortTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/message/MessageTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/AlertNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/CollectorNodeTest.java
+/Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/CompositeRuleNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/CounterNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/DelayNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/FileWriterNodeTest.java
@@ -22,6 +24,7 @@
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/MqttPublisherNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/MqttSubscriberNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/PrintNodeTest.java
+/Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/RuleNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/SplitNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/TemperatureSensorNodeTest.java
 /Users/chosun-nhn55/Desktop/iot/fbp/fbp-engine/src/test/java/com/fbp/engine/node/ThresholdFilterNodeTest.java

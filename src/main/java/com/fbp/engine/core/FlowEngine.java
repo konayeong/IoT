@@ -1,5 +1,6 @@
 package com.fbp.engine.core;
 
+import com.fbp.engine.message.Message;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * FBP 엔진의 최상위 관리자
@@ -26,10 +29,12 @@ public class FlowEngine {
 
     private final Map<String, Flow> flows;
     private State state;
+    private final ExecutorService executor;
 
     public FlowEngine() {
         this.state = State.INITIALIZED;
         this.flows = new HashMap<>();
+        this.executor = Executors.newFixedThreadPool(20);
     }
 
     /**
@@ -60,6 +65,22 @@ public class FlowEngine {
         }
 
         flow.initialize();
+
+        for (Connection conn : flow.getConnections()) {
+            executor.submit(() -> {
+                try {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        Message msg = conn.poll();
+                        if (conn.getTarget() != null) {
+                            conn.getTarget().receive(msg);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+        }
+
         flow.setFlowState(Flow.FlowState.RUNNING);
         this.state = State.RUNNING;
         log.info("[Engine] 플로우 {} 시작됨", flow.getId());
@@ -90,6 +111,9 @@ public class FlowEngine {
             }
         }
         this.state = State.STOPPED;
+        if (executor != null && !executor.isShutdown()) {
+            executor.shutdownNow();
+        }
     }
 
     /**
