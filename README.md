@@ -15,7 +15,7 @@
         - 공통 생성 인터페이스가 필요
 
 # Step 4~5
-### 플로우 정의 포맷 설계
+## 플로우 정의 포맷 설계
 - 엔진은 외부 JSON/YAML 정의를 읽어서 플로우를 구성(노드 생성, 포트 연결, 플로우 실행)해야 한다
 - 플로우 정의 예시 (JSON)
 
@@ -58,4 +58,23 @@
       ]
     }
     ```
-### 플러그인 아키텍처 개념 설계
+  
+### Definition 계층
+> JSON/YAML 설정 표현
+- JSON, YAML을 메모리 객체로 옮긴 게 ~Definition (설정 데이터), 실행 안 함 
+
+### 핵심 동작 흐름
+```text
+JSON 파일
+   │
+   ▼
+FlowParser.parse(InputStream) → FlowDefinition
+   │
+   ▼
+FlowDefinition + NodeRegistry → Flow 객체 생성
+   │  (NodeRegistry로 각 노드 인스턴스 생성, Connection으로 연결)
+   ▼
+FlowManager.deploy(Flow) → FlowEngine에 등록 및 실행
+```
+# Step 6~7
+## 플러그인 아키텍처 개념 설계
