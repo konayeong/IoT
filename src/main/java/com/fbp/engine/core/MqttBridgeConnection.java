@@ -42,6 +42,7 @@ public class MqttBridgeConnection implements Connection {
 
     @Getter @Setter
     private InputPort target;
+    private volatile boolean connected = false;
 
     public MqttBridgeConnection(String id, String brokerUri, String topic, MessageSerializer serializer, int qos) {
         this.id = id;
@@ -54,20 +55,31 @@ public class MqttBridgeConnection implements Connection {
     /**
      * MQTT 브로커 연결 및 라우팅 등록
      */
-    public void connect() {
-        try {
-            MqttClientManager manager = MqttClientManager.getInstance();
+    public synchronized void connect() {
 
-            // 공용 client 획득
+        if (connected) {
+            return;
+        }
+
+        try {
+
+            MqttClientManager manager =
+                    MqttClientManager.getInstance();
+
             this.client = manager.getPubClient(brokerUri);
 
-            // topic 라우팅 등록
             manager.registerRoute(topic, this);
+
+            connected = true;
 
             log.info("[{}] MQTT bridge connected", id);
 
         } catch (MqttException e) {
-            throw new RuntimeException("MQTT bridge connect 실패", e);
+
+            throw new RuntimeException(
+                    "MQTT bridge 연결 실패",
+                    e
+            );
         }
     }
 
@@ -134,6 +146,8 @@ public class MqttBridgeConnection implements Connection {
             MqttClientManager.getInstance().unregisterRoute(topic, this);
 
             internalQueue.clear();
+
+            connected = false;
 
             log.info("[{}] MQTT bridge closed", id);
 

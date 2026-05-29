@@ -182,6 +182,7 @@ class FlowManagerTest {
                 "flow1",
                 "test-flow",
                 null,
+                null,
                 List.of(
                         new NodeDefinition(
                                 "node1",
@@ -203,6 +204,7 @@ class FlowManagerTest {
         return new FlowDefinition(
                 flowId,
                 "test-flow",
+                null,
                 null,
                 List.of(
                         new NodeDefinition(

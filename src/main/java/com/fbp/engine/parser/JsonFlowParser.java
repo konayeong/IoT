@@ -25,12 +25,49 @@ public class JsonFlowParser implements FlowParser {
 
             List<NodeDefinition> nodes = parseNodes(root.get("nodes"));
             List<ConnectionDefinition> connections = parseConnections(root.get("connections"));
+            TransportDefinition transport = parseTransport(root.get("transport"));
 
-            return new FlowDefinition(id, name, description, nodes, connections);
+            return new FlowDefinition(id, name, description, transport, nodes, connections);
 
         } catch (Exception e) {
             throw new FlowParserException("JSON 파싱 실패", e);
         }
+    }
+
+    private TransportDefinition parseTransport(JsonNode transportNode) {
+
+        // transport 없으면 기본 LOCAL
+        if (transportNode == null || transportNode.isNull()) {
+            return new TransportDefinition(
+                    TransportType.LOCAL,
+                    null,
+                    0
+            );
+        }
+
+        String typeText = getRequiredText(transportNode, "type");
+
+        TransportType type;
+
+        try {
+            type = TransportType.valueOf(typeText.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new FlowParserException(
+                    "지원하지 않는 transport type: " + typeText
+            );
+        }
+
+        String brokerUri = getOptionalText(transportNode, "brokerUri");
+
+        Integer qos = transportNode.has("qos")
+                ? transportNode.get("qos").asInt()
+                : 0;
+
+        return new TransportDefinition(
+                type,
+                brokerUri,
+                qos
+        );
     }
 
     private List<NodeDefinition> parseNodes(JsonNode nodesNode) {

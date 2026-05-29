@@ -1,10 +1,7 @@
 package com.fbp.engine.parser;
 
 import com.fbp.engine.api.FlowNotFoundException;
-import com.fbp.engine.core.AbstractNode;
-import com.fbp.engine.core.Flow;
-import com.fbp.engine.core.FlowEngine;
-import com.fbp.engine.core.Node;
+import com.fbp.engine.core.*;
 import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.registry.NodeRegistry;
 import com.sun.jdi.request.DuplicateRequestException;
@@ -29,6 +26,7 @@ public class FlowManager {
     private final FlowEngine flowEngine;
     private final Map<String, Flow> deployedFlows = new ConcurrentHashMap<>();
     private final MetricsCollector metricsCollector;
+    private final ConnectionFactory connectionFactory;
 
     /**
      * Flow 배포 및 실행
@@ -74,7 +72,16 @@ public class FlowManager {
 
         // Connection 연결
         for (ConnectionDefinition connDef : definition.connections()) {
-            flow.connect(connDef.fromNode(), connDef.fromPort(), connDef.toNode(), connDef.toPort());
+
+            Connection connection = connectionFactory.create(definition, connDef);
+
+            flow.addConnection(
+                    connDef.fromNode(),
+                    connDef.fromPort(),
+                    connDef.toNode(),
+                    connDef.toPort(),
+                    connection
+            );
         }
 
         // Flow 검증
@@ -134,6 +141,7 @@ public class FlowManager {
 
         // 저장소 제거
         deployedFlows.remove(flowId);
+        flow.shutdown();
         log.info("Flow 제거 완료: {}", flowId);
         return true;
     }

@@ -80,7 +80,20 @@ public class Flow {
         connections.add(connection);
 
         return this;
+    }
 
+    public void addConnection(String sourceNodeId, String sourcePort, String targetNodeId, String targetPort, Connection connection) {
+        AbstractNode sourceNode = nodes.get(sourceNodeId);
+        AbstractNode targetNode = nodes.get(targetNodeId);
+
+        OutputPort out = sourceNode.getOutputPort(sourcePort);
+        InputPort in = targetNode.getInputPort(targetPort);
+
+        connection.setTarget(in);
+
+        out.connect(connection);
+
+        connections.add(connection);
     }
 
     public void initialize() {
@@ -91,9 +104,15 @@ public class Flow {
     }
 
     public void shutdown() {
-        for(AbstractNode node : nodes.values()) {
+
+        for (Connection connection : connections) {
+            connection.close();
+        }
+
+        for (AbstractNode node : nodes.values()) {
             node.shutdown();
         }
+
         this.flowState = FlowState.STOPPED;
     }
 

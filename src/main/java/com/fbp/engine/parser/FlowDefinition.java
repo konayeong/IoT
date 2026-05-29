@@ -8,11 +8,16 @@ public record FlowDefinition(
         String id,
         String name,
         String description,
+
+        // 추가
+        TransportDefinition transport,
+
         List<NodeDefinition> nodes,
         List<ConnectionDefinition> connections
 ) {
 
     public FlowDefinition {
+
         if (id == null || id.isBlank()) {
             throw new FlowParserException("Flow ID 필수");
         }
@@ -27,7 +32,11 @@ public record FlowDefinition(
         validate(nodes, connections);
     }
 
-    private static void validate(List<NodeDefinition> nodes, List<ConnectionDefinition> connections) {
+    private static void validate(
+            List<NodeDefinition> nodes,
+            List<ConnectionDefinition> connections
+    ) {
+
         Set<String> nodeIds = new HashSet<>();
 
         // 노드 ID 중복 검사
@@ -39,17 +48,23 @@ public record FlowDefinition(
 
         // 연결 검증
         for (ConnectionDefinition conn : connections) {
+
             if (!nodeIds.contains(conn.fromNode())) {
-                throw new FlowParserException("존재하지 않는 source node: " + conn.fromNode());
+                throw new FlowParserException(
+                        "존재하지 않는 source node: " + conn.fromNode()
+                );
             }
 
             if (!nodeIds.contains(conn.toNode())) {
-                throw new FlowParserException("존재하지 않는 target node: " + conn.toNode());
+                throw new FlowParserException(
+                        "존재하지 않는 target node: " + conn.toNode()
+                );
             }
         }
     }
 
     public NodeDefinition getNode(String nodeId) {
+
         return nodes.stream()
                 .filter(node -> node.id().equals(nodeId))
                 .findFirst()

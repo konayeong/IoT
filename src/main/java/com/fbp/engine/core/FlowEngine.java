@@ -53,22 +53,35 @@ public class FlowEngine {
      * 플로우 실행
      */
     public void startFlow(String flowId) {
-        if(!flows.containsKey(flowId)) {
+
+        if (!flows.containsKey(flowId)) {
             throw new IllegalArgumentException("존재하지 않는 Flow: " + flowId);
         }
 
         Flow flow = flows.get(flowId);
-        if(flow.getFlowState() == Flow.FlowState.RUNNING) {
+
+        if (flow.getFlowState() == Flow.FlowState.RUNNING) {
             log.warn("[Engine] 플로우 {} 실행 중", flowId);
             return;
         }
 
         List<String> errors = flow.validate();
-        if(!errors.isEmpty()) {
-            throw new IllegalStateException("Flow " + flowId + " validation errors: " + errors);
+
+        if (!errors.isEmpty()) {
+            throw new IllegalStateException(
+                    "Flow validation errors: " + errors
+            );
+        }
+
+        // MQTT bridge connect
+        for (Connection conn : flow.getConnections()) {
+            if (conn instanceof MqttBridgeConnection mqtt) {
+                mqtt.connect();
+            }
         }
 
         flow.initialize();
+
         for (Connection conn : flow.getConnections()) {
             executorService.submit(() -> {
                 try {
@@ -76,11 +89,11 @@ public class FlowEngine {
                         Message msg = conn.poll();
 
                         if (conn.getTarget() != null) {
+
                             long start = System.nanoTime();
 
                             try {
                                 conn.getTarget().receive(msg);
-
                                 metricsCollector.recordSuccess(
                                         conn.getTarget().getOwner().getId(),
                                         System.nanoTime() - start
@@ -101,6 +114,7 @@ public class FlowEngine {
 
         flow.setFlowState(Flow.FlowState.RUNNING);
         this.state = State.RUNNING;
+
         log.info("[Engine] 플로우 {} 시작됨", flow.getId());
     }
 
@@ -115,6 +129,11 @@ public class FlowEngine {
         Flow flow = flows.get(flowId);
         flow.shutdown();
         flow.setFlowState(Flow.FlowState.STOPPED);
+
+        for (Connection conn : flow.getConnections()) {
+            conn.close();
+        }
+
         log.info("[Engine] 플로우 '{}' 정지됨", flowId);
     }
 
