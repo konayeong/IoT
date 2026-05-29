@@ -1,0 +1,42 @@
+{
+  "id": "temperature-monitoring",
+  "transport": {
+    "type": "mqtt",
+    "brokerUri": "tcp://localhost:1883",
+    "qos": 1
+  },
+  "name": "온도 모니터링 플로우",
+  "description": "MQTT 센서 데이터를 수신하여 임계값 초과 시 알림",
+  "nodes": [
+    {
+      "id": "sensor",
+      "type": "MqttSubscriber",
+      "config": {
+        "broker": "tcp://localhost:1883",
+        "topic": "sensor/temp",
+        "qos": 1
+      }
+    },
+    {
+      "id": "rule",
+      "type": "Filter",
+      "config": {
+        "field": "value",
+        "operator": ">",
+        "threshold": 30
+      }
+    },
+    {
+      "id": "alert",
+      "type": "MqttPublisher",
+      "config": {
+        "broker": "tcp://localhost:1883",
+        "topic": "alert/temp"
+      }
+    }
+  ],
+  "connections": [
+    { "from": "sensor:out", "to": "rule:in" },
+    { "from": "rule:out", "to": "alert:in" }
+  ]
+}

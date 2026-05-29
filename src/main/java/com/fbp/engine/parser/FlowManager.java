@@ -190,4 +190,58 @@ public class FlowManager {
 
         return flow;
     }
+
+    // == Stage3+ ==
+    public void addNode(String flowId, NodeDefinition nodeDef) {
+
+        Flow flow = getRequiredFlow(flowId);
+
+        Node node = nodeRegistry.create(nodeDef.type(), nodeDef.id(), nodeDef.config());
+
+        AbstractNode absNode = (AbstractNode) node;
+
+        flow.addNode(absNode);
+
+        // 실행 중이면 즉시 활성화
+        if (flow.getFlowState() == Flow.FlowState.RUNNING) {
+            absNode.initialize();
+        }
+
+        log.info("[{}] node 추가 완료: {}", flowId, nodeDef.id());
+    }
+
+    public void removeNode(String flowId, String nodeId) {
+
+        Flow flow = getRequiredFlow(flowId);
+
+        flow.removeNode(nodeId);
+
+        log.info("[{}] node 제거 완료: {}", flowId, nodeId);
+    }
+
+    public void addWire(String flowId, ConnectionDefinition connDef, FlowDefinition definition) {
+        Flow flow = getRequiredFlow(flowId);
+
+        Connection connection =
+                connectionFactory.create(definition, connDef);
+
+        flow.addConnection(
+                connDef.fromNode(),
+                connDef.fromPort(),
+                connDef.toNode(),
+                connDef.toPort(),
+                connection
+        );
+
+        log.info("[{}] wire 추가 완료", flowId);
+    }
+
+    public void removeWire(String flowId, String wireId) {
+
+        Flow flow = getRequiredFlow(flowId);
+
+        flow.removeConnection(wireId);
+
+        log.info("[{}] wire 제거 완료: {}", flowId, wireId);
+    }
 }

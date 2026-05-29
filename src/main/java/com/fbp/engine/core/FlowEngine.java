@@ -74,7 +74,8 @@ public class FlowEngine {
         }
 
         // MQTT bridge connect
-        for (Connection conn : flow.getConnections()) {
+        for (FlowConnection fc : flow.getConnections()) {
+            Connection conn = fc.getConnection();
             if (conn instanceof MqttBridgeConnection mqtt) {
                 mqtt.connect();
             }
@@ -82,40 +83,49 @@ public class FlowEngine {
 
         flow.initialize();
 
-        for (Connection conn : flow.getConnections()) {
-            executorService.submit(() -> {
-                try {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        Message msg = conn.poll();
-
-                        if (conn.getTarget() != null) {
-
-                            long start = System.nanoTime();
-
-                            try {
-                                conn.getTarget().receive(msg);
-                                metricsCollector.recordSuccess(
-                                        conn.getTarget().getOwner().getId(),
-                                        System.nanoTime() - start
-                                );
-                            } catch (Exception e) {
-                                metricsCollector.recordFailure(
-                                        conn.getTarget().getOwner().getId(),
-                                        System.nanoTime() - start
-                                );
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            });
+        for (FlowConnection fc : flow.getConnections()) {
+            registerConnection(fc.getConnection());
         }
 
         flow.setFlowState(Flow.FlowState.RUNNING);
         this.state = State.RUNNING;
 
         log.info("[Engine] 플로우 {} 시작됨", flow.getId());
+    }
+
+    public void registerConnection(Connection conn) {
+        executorService.submit(() -> {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+
+                    Message msg = conn.poll();
+
+                    if (conn.getTarget() != null) {
+
+                        long start = System.nanoTime();
+
+                        try {
+                            conn.getTarget().receive(msg);
+
+                            metricsCollector.recordSuccess(
+                                    conn.getTarget().getOwner().getId(),
+                                    System.nanoTime() - start
+                            );
+
+                        } catch (Exception e) {
+
+                            metricsCollector.recordFailure(
+                                    conn.getTarget().getOwner().getId(),
+                                    System.nanoTime() - start
+                            );
+                        }
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
     }
 
     /**
@@ -130,8 +140,8 @@ public class FlowEngine {
         flow.shutdown();
         flow.setFlowState(Flow.FlowState.STOPPED);
 
-        for (Connection conn : flow.getConnections()) {
-            conn.close();
+        for (FlowConnection fc : flow.getConnections()) {
+            fc.getConnection().close();
         }
 
         log.info("[Engine] 플로우 '{}' 정지됨", flowId);

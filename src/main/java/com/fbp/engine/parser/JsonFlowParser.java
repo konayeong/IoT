@@ -22,10 +22,10 @@ public class JsonFlowParser implements FlowParser {
             String id = getRequiredText(root, "id");
             String name = getOptionalText(root, "name");
             String description = getOptionalText(root, "description");
+            TransportDefinition transport = parseTransport(root.get("transport"));
 
             List<NodeDefinition> nodes = parseNodes(root.get("nodes"));
             List<ConnectionDefinition> connections = parseConnections(root.get("connections"));
-            TransportDefinition transport = parseTransport(root.get("transport"));
 
             return new FlowDefinition(id, name, description, transport, nodes, connections);
 

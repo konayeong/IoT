@@ -63,8 +63,7 @@ public class MqttBridgeConnection implements Connection {
 
         try {
 
-            MqttClientManager manager =
-                    MqttClientManager.getInstance();
+            MqttClientManager manager = MqttClientManager.getInstance();
 
             this.client = manager.getPubClient(brokerUri);
 

@@ -29,7 +29,7 @@ public class Flow {
     private String description;
 
     private final Map<String, AbstractNode> nodes = new HashMap<>();
-    private final List<Connection> connections = new ArrayList<>();
+    private final List<FlowConnection> connections = new ArrayList<>();
     @Setter
     private FlowState flowState =  FlowState.STOPPED;
 
@@ -77,7 +77,7 @@ public class Flow {
 
         out.connect(connection);
 
-        connections.add(connection);
+        connections.add(new FlowConnection(sourceNodeId, sourcePort, targetNodeId, targetPort, connection));
 
         return this;
     }
@@ -93,7 +93,7 @@ public class Flow {
 
         out.connect(connection);
 
-        connections.add(connection);
+        connections.add(new FlowConnection(sourceNodeId, sourcePort, targetNodeId, targetPort, connection));
     }
 
     public void initialize() {
@@ -105,8 +105,8 @@ public class Flow {
 
     public void shutdown() {
 
-        for (Connection connection : connections) {
-            connection.close();
+        for (FlowConnection fc : connections) {
+            fc.getConnection().close();
         }
 
         for (AbstractNode node : nodes.values()) {
@@ -114,6 +114,65 @@ public class Flow {
         }
 
         this.flowState = FlowState.STOPPED;
+    }
+
+    public void removeNode(String nodeId) {
+
+        AbstractNode node = nodes.remove(nodeId);
+
+        if (node == null) {
+            return;
+        }
+
+        // 연결 제거
+        List<String> removeIds = new ArrayList<>();
+
+        for (FlowConnection fc : connections) {
+
+            if (fc.getSourceNodeId().equals(nodeId)
+                    || fc.getTargetNodeId().equals(nodeId)) {
+
+                removeIds.add(fc.getId());
+            }
+        }
+
+        for (String connId : removeIds) {
+            removeConnection(connId);
+        }
+
+        node.shutdown();
+    }
+
+    public void removeConnection(String connectionId) {
+
+        FlowConnection target = null;
+
+        for (FlowConnection fc : connections) {
+
+            if (fc.getId().equals(connectionId)) {
+                target = fc;
+                break;
+            }
+        }
+
+        if (target == null) {
+            return;
+        }
+
+        AbstractNode sourceNode = nodes.get(target.getSourceNodeId());
+
+        if (sourceNode != null) {
+
+            OutputPort out = sourceNode.getOutputPort(target.getSourcePort());
+
+            if (out != null) {
+                out.disconnect(target.getConnection());
+            }
+        }
+
+        target.getConnection().close();
+
+        connections.remove(target);
     }
 
     public List<String> validate() {
@@ -138,8 +197,8 @@ public class Flow {
             graph.put(id, new ArrayList<>());
         }
 
-        for (Connection conn : connections) {
-
+        for (FlowConnection fc : connections) {
+            Connection conn = fc.getConnection();
             // MQTT bridge 같은 외부 connection은 제외
             if (!conn.getId().contains("->")) {
                 continue;
@@ -150,6 +209,9 @@ public class Flow {
             String source = parts[0].split(":")[0];
             String target = parts[1].split(":")[0];
 
+            if (!graph.containsKey(source) || !graph.containsKey(target)) {
+                continue;
+            }
             graph.get(source).add(target);
         }
         // 각 노드의 상태
@@ -174,7 +236,7 @@ public class Flow {
 
         state.put(node, State.VISITING);
 
-        for (String next : graph.get(node)) {
+        for (String next : graph.getOrDefault(node, List.of())) {
             // 아직 안 간 노드 → 계속 탐색
             if (state.get(next) == State.UNVISITED) {
                 if (dfs(next, graph, state)) return true;

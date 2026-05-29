@@ -1,6 +1,7 @@
 package com.fbp.engine.runner;
 
 import com.fbp.engine.api.HttpApiServer;
+import com.fbp.engine.core.BridgeConnectionFactory;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.parser.FlowManager;
@@ -21,7 +22,7 @@ public class Stage3 {
         MetricsCollector metricsCollector = new MetricsCollector();
         FlowEngine flowEngine = new FlowEngine(metricsCollector);
 
-        FlowManager flowManager = new FlowManager(nodeRegistry, flowEngine, metricsCollector);
+        FlowManager flowManager = new FlowManager(nodeRegistry, flowEngine, metricsCollector, new BridgeConnectionFactory());
         FlowParser flowParser = new JsonFlowParser();
 
         HttpApiServer server = new HttpApiServer(8080, flowManager, metricsCollector, flowParser);

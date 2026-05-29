@@ -1,9 +1,6 @@
 package com.fbp.engine.api;
 
-import com.fbp.engine.core.AbstractNode;
-import com.fbp.engine.core.Flow;
-import com.fbp.engine.core.FlowEngine;
-import com.fbp.engine.core.Node;
+import com.fbp.engine.core.*;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.parser.FlowManager;
@@ -48,7 +45,7 @@ class HttpApiServerTest {
 
         MetricsCollector metricsCollector = new MetricsCollector();
         FlowEngine flowEngine = new FlowEngine(metricsCollector);
-        FlowManager flowManager = new FlowManager(nodeRegistry, flowEngine, metricsCollector);
+        FlowManager flowManager = new FlowManager(nodeRegistry, flowEngine, metricsCollector, new BridgeConnectionFactory());
         JsonFlowParser flowParser = new JsonFlowParser();
 
         server = new HttpApiServer(port, flowManager, metricsCollector, flowParser);

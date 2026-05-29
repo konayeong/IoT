@@ -2,6 +2,7 @@ package com.fbp.engine.parser;
 
 import com.fbp.engine.api.FlowNotFoundException;
 import com.fbp.engine.core.AbstractNode;
+import com.fbp.engine.core.BridgeConnectionFactory;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.message.Message;
@@ -49,7 +50,8 @@ class FlowManagerTest {
         flowManager = new FlowManager(
                 nodeRegistry,
                 flowEngine,
-                metricsCollector
+                metricsCollector,
+                new BridgeConnectionFactory()
         );
     }
 
