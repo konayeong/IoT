@@ -1,5 +1,7 @@
 package com.fbp.engine.message;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +12,17 @@ public class Message {
     private final String id;
     private final Map<String, Object> payload; // Map : 데이터 형태가 계속 바뀜
     private final long timestamp;
+
+    @JsonCreator
+    public Message(
+            @JsonProperty("id") String id,
+            @JsonProperty("payload") Map<String, Object> payload,
+            @JsonProperty("timestamp") long timestamp
+    ) {
+        this.id = id;
+        this.payload = payload;
+        this.timestamp = timestamp;
+    }
 
     // 생성자 : ID 자동 생성, 페이로드 불변 복사, 타임스탬프 자동 기록
     public Message(Map<String, Object> payload) {

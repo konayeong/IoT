@@ -70,7 +70,7 @@ class AbstractNodeTest {
         testNode.addOutputPort("out");
         receiver.addInputPort("in");
 
-        Connection conn = new Connection("conn");
+        Connection conn = new LocalConnection("conn");
         conn.setTarget(receiver.getInputPort("in"));
         testNode.getOutputPort("out").connect(conn);
 

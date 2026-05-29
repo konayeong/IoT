@@ -1,7 +1,5 @@
-package com.fbp.engine.core.impl;
+package com.fbp.engine.core;
 
-import com.fbp.engine.core.Connection;
-import com.fbp.engine.core.DefaultOutputPort;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +21,7 @@ class DefaultOutputPortTest {
     @DisplayName("단일 Connection 전달")
     void single_connection() {
         // 	send()하면 연결된 Connection에 메시지가 전달됨
-        Connection connection = new Connection("conn-1");
+        Connection connection = new LocalConnection("conn-1");
         outputPort.connect(connection);
         outputPort.send(message);
 
@@ -34,8 +32,8 @@ class DefaultOutputPortTest {
     @DisplayName("다중 Connection 전달 (1:N)")
     void multi_connection() {
         // 2개의 Connection을 연결하고 send()하면 양쪽 모두 메시지를 수신
-        Connection connection1 = new Connection("conn-1");
-        Connection connection2 = new Connection("conn-2");
+        Connection connection1 = new LocalConnection("conn-1");
+        Connection connection2 = new LocalConnection("conn-2");
         outputPort.connect(connection1);
         outputPort.connect(connection2);
 

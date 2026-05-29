@@ -1,13 +1,13 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.LocalConnection;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,7 +19,7 @@ class HumiditySensorNodeTest {
     @BeforeEach
     void setUp() {
         sensorNode = new HumiditySensorNode("sensor", 30, 90);
-        conn = new Connection("conn");
+        conn = new LocalConnection("conn");
         sensorNode.getOutputPort("out").connect(conn);
     }
 

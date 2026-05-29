@@ -1,6 +1,7 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.LocalConnection;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,7 @@ class LogNodeTest {
     @BeforeEach
     void setUp() {
         logNode = new LogNode("log");
-        connection = new Connection("conn");
+        connection = new LocalConnection("conn");
         logNode.getOutputPort("out").connect(connection);
     }
 
@@ -33,7 +34,7 @@ class LogNodeTest {
     @Test
     @DisplayName("중간 삽입 가능")
     void middle_insert() throws InterruptedException {
-        Connection connB = new Connection("connB");
+        Connection connB = new LocalConnection("connB");
 
         logNode.getOutputPort("out").connect(connB);
 

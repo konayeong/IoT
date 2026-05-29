@@ -1,6 +1,7 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.LocalConnection;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +21,7 @@ class TransformNodeTest {
             double celsius = (fahrenheit - 32) * 5.0 / 9.0;
             return msg.withEntry("temperature", celsius);
         });
-        connection = new Connection("conn");
+        connection = new LocalConnection("conn");
         transformNode.getOutputPort("out").connect(connection);
     }
 
@@ -38,7 +39,7 @@ class TransformNodeTest {
     @DisplayName("null 반환 시 미전달")
     void null_transformer_no() {
         TransformNode node = new TransformNode("transform", msg -> null);
-        Connection conn2 = new Connection("conn2");
+        Connection conn2 = new LocalConnection("conn2");
         node.getOutputPort("out").connect(conn2);
 
         node.onProcess(new Message(Map.of()));

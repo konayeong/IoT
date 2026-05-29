@@ -1,6 +1,7 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.LocalConnection;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +19,8 @@ class SplitNodeTest {
     void setUp() {
         splitNode = new SplitNode("split", "tick", 3);
 
-        connection1 = new Connection("match");
-        connection2 = new Connection("mismatch");
+        connection1 = new LocalConnection("match");
+        connection2 = new LocalConnection("mismatch");
         splitNode.getOutputPort("match").connect(connection1);
         splitNode.getOutputPort("mismatch").connect(connection2);
     }

@@ -10,13 +10,13 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ConnectionTest {
-    private Connection connection;
+class LocalConnectionTest {
+    private LocalConnection connection;
     private Message message;
 
     @BeforeEach
     void setUp() {
-        connection = new Connection("conn-1");
+        connection = new LocalConnection("conn-1");
         message = new Message(Map.of("temperature", 25.0));
     }
 
@@ -93,7 +93,7 @@ class ConnectionTest {
     @Test
     @DisplayName("버퍼 크기 제한")
     void bufferSize_boundary() throws InterruptedException {
-        Connection conn = new Connection("conn-2", 2);
+        LocalConnection conn = new LocalConnection("conn-2", 2);
         CountDownLatch latch = new CountDownLatch(1);
 
         Thread producer = new Thread(() -> {

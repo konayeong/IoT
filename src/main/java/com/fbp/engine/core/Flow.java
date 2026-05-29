@@ -72,7 +72,7 @@ public class Flow {
         }
 
         String connId = sourceNodeId + ":" + sourcePort + "->" + targetNodeId + ":" + targetPort;
-        Connection connection = new Connection(connId);
+        Connection connection = new LocalConnection(connId);
         connection.setTarget(in);
 
         out.connect(connection);
@@ -120,12 +120,19 @@ public class Flow {
         }
 
         for (Connection conn : connections) {
+
+            // MQTT bridge 같은 외부 connection은 제외
+            if (!conn.getId().contains("->")) {
+                continue;
+            }
+
             String[] parts = conn.getId().split("->");
+
             String source = parts[0].split(":")[0];
             String target = parts[1].split(":")[0];
+
             graph.get(source).add(target);
         }
-
         // 각 노드의 상태
         Map<String, State> state = new HashMap<>();
         for (String id : nodes.keySet()) {

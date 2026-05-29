@@ -1,45 +1,15 @@
 package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
-import lombok.Getter;
-import lombok.Setter;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-public class Connection {
-    @Getter
-    private final String id;
-    private final BlockingQueue<Message> buffer;
-    @Getter @Setter
-    private InputPort target;
+public interface Connection {
+    void deliver(Message message);
+    Message poll() throws InterruptedException ;
+    int getBufferSize();
+    String getId();
+    void close();
 
-    public Connection(String id, int size) {
-        this.id = id;
-        this.buffer = new LinkedBlockingQueue<>(size);
-    }
+    InputPort getTarget();
+    void setTarget(InputPort target);
 
-    public Connection(String id) {
-        this(id, 100);
-    }
-
-    public void deliver(Message message) {
-        try {
-            buffer.put(message);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Message poll() throws InterruptedException {
-        return buffer.take();
-    }
-
-    public int getBufferSize() {
-        return buffer.size();
-    }
-
-    public void transfer(Message msg) {
-        target.receive(msg);
-    }
 }
